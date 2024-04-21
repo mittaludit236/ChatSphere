@@ -27,7 +27,7 @@ export default function Post({ post }) {
             <span className="text-sm text-gray-500 ml-2">{post.date}</span>
           </div>
           <div className="text-gray-500">
-            <AiOutlineEllipsis  />
+            <AiOutlineEllipsis/>
           </div>
         </div>
         <div className="mt-4">
