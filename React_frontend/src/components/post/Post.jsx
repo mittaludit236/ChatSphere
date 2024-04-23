@@ -1,30 +1,46 @@
 import { AiOutlineEllipsis } from "react-icons/ai"; // Using Material Design icons
 import React, { useState } from 'react';
-import { Users } from "../../dummyData";
+import { useContext, useEffect } from "react";
+import axios from "axios";
+import { format } from "timeago.js";
+import { Link } from "react-router-dom";
+
+
 
 export default function Post({ post }) {
-  const [like, setLike] = useState(post.like);
+  const [like, setLike] = useState(post.likes.length);
   const [isLiked, setIsLiked] = useState(false);
-
+  const [user, setUser] = useState({});
+  const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const likeHandler = () => {
     setLike(isLiked ? like - 1 : like + 1);
     setIsLiked(!isLiked);
   };
+  useEffect(()=>{
+    const fetchUser = async () => {
+  const res= await axios.get(`/users/${post.userId}`);
+  setUser(res.data);
+    };
+    fetchUser();
+  },[post.userId]
+    );
 
   return (
     <div className="w-full rounded-md shadow-md my-8">
       <div className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
+          <Link to={`/profile/${user.username}`}>
             <img
               className="w-8 h-8 rounded-full object-cover mr-2"
-              src={Users.find((u) => u.id === post?.userId)?.profilePicture}
+              src={user.profilePicture}
               alt=""
-            />
+            /> 
+            </Link>
             <span className="text-base font-medium">
-              {Users.find((u) => u.id === post?.userId)?.username}
+{user.username}
             </span>
-            <span className="text-sm text-gray-500 ml-2">{post.date}</span>
+            <span className="text-sm text-gray-500 ml-2">{format(post.createdAt)}</span>
           </div>
           <div className="text-gray-500">
             <AiOutlineEllipsis/>
@@ -32,19 +48,19 @@ export default function Post({ post }) {
         </div>
         <div className="mt-4">
           <span className="text-base">{post?.desc}</span>
-          <img className="mt-4 w-full max-h-96 object-contain" src={post.photo} alt="" />
+          <img className="mt-4 w-full max-h-96 object-contain" src={PF+ post.img} alt="" />
         </div>
         <div className="flex items-center justify-between mt-4">
           <div className="flex items-center">
             <img
               className="w-6 h-6 mr-1 cursor-pointer"
-              src="assets/like.png"
+               src={`${PF}like.png`}
               onClick={likeHandler}
               alt=""
             />
             <img
               className="w-6 h-6 mr-1 cursor-pointer"
-              src="assets/heart.png"
+              src={`${PF}heart.png`}
               onClick={likeHandler}
               alt=""
             />
