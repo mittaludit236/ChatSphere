@@ -2,7 +2,8 @@ import { Users } from "../../dummyData";
 import Online from "../online/Online";
 import { IoGiftOutline } from 'react-icons/io5';
 
-export default function Rightbar({ profile }) {
+export default function Rightbar({ user }) {
+
   const HomeRightbar = () => {
     return (
       <div className="flex flex-col">
@@ -24,21 +25,22 @@ export default function Rightbar({ profile }) {
   };
 
   const ProfileRightbar = () => {
+    const PF = process.env.REACT_APP_PUBLIC_FOLDER;
     return (
       <div className="flex flex-col">
         <h4 className="text-lg font-semibold mb-4">User information</h4>
         <div className="mb-6">
           <div className="flex mb-4">
             <span className="font-semibold mr-2">City:</span>
-            <span>New York</span>
+            <span>{user.city}</span>
           </div>
           <div className="flex mb-4">
             <span className="font-semibold mr-2">From:</span>
-            <span>Madrid</span>
+            <span>{user.from}</span>
           </div>
           <div className="flex mb-4">
             <span className="font-semibold mr-2">Relationship:</span>
-            <span>Single</span>
+            <span>{user.relationship}</span>
           </div>
         </div>
         <h4 className="text-lg font-semibold mb-4">User friends</h4>
@@ -47,7 +49,7 @@ export default function Rightbar({ profile }) {
             <div key={user.id} className="w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 px-2 mb-4">
               <div className="flex flex-col items-center">
                 <img
-                  src={user.profilePicture}
+                  src={PF+ user.profilePicture}
                   alt=""
                   className="w-20 h-20 object-cover rounded-full mb-2"
                 />
@@ -63,7 +65,7 @@ export default function Rightbar({ profile }) {
   return (
     <div className="hidden md:flex md:flex-1.5 md:flex-col md:justify-center md:items-center">
       <div className="p-4 rightbar">
-        {profile ? <ProfileRightbar /> : <HomeRightbar />}
+        {user ? <ProfileRightbar /> : <HomeRightbar />}
       </div>
     </div>
   );
