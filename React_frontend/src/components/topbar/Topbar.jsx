@@ -1,6 +1,11 @@
 import { FaSearch, FaUser, FaComment, FaBell } from 'react-icons/fa';
 import {Link} from "react-router-dom"
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext"; 
 export default function Topbar() {
+
+  const { user } = useContext(AuthContext);
+  const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   return (
     <div className="bg-blue-500 h-16 w-full flex items-center sticky top-0 z-999">
       <div className="flex-3 pl-4 mr-4">
@@ -36,7 +41,9 @@ export default function Topbar() {
             <span className="topbarIconBadge">1</span>
           </div>
         </div>
-        <img src="/assets/person/1.jpeg" alt="" className="w-8 h-8 rounded-full object-cover cursor-pointer ml-10"/>
+        <Link to={`/profile/${user.username}`}>
+        <img src={user.profilePicture ? PF+user.profilePicture: PF+"person/noadmin.webp"} alt="" className="w-8 h-8 rounded-full object-cover cursor-pointer ml-10"/>
+        </Link>
       </div>
     </div>
   );
