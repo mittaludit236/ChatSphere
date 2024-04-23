@@ -1,31 +1,67 @@
-import React from 'react';
+import React, { useContext, useRef ,useState } from 'react';
 import { BsFillImageFill } from 'react-icons/bs';
 import { HiTag } from 'react-icons/hi';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { IoHappyOutline } from 'react-icons/io5';
+import { AuthContext } from "../../context/AuthContext";
+import axios from "axios";
 
 export default function Share() {
+  const { user } = useContext(AuthContext);
+  const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+  const desc = useRef();
+  const [file, setFile] = useState(null);
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    const newPost = {
+      userId: user._id,
+      desc: desc.current.value,
+    };
+    if (file) {
+      const data = new FormData();
+      const fileName = Date.now() + file.name;
+      data.append("name", fileName);
+      data.append("file", file);
+      newPost.img = fileName;
+      console.log(newPost);
+      try {
+        await axios.post("/upload", data);
+        window.location.reload();
+      } catch (err) {}
+    }
+    try {
+      await axios.post("/posts", newPost);
+      window.location.reload();
+    } catch (err) {}
+  };
   return (
     <div className="share w-full h-48 rounded-lg shadow-md">
       <div className="shareWrapper p-4">
         <div className="shareTop flex items-center">
           <img
             className="shareProfileImg w-12 h-12 rounded-full object-cover mr-4"
-            src="/assets/person/1.jpeg"
+            src={
+              user.profilePicture
+                ? PF + user.profilePicture
+                : PF + "person/noadmin.webp"
+            }
             alt=""
           />
           <input
-            placeholder="What's in your mind Safak?"
+            placeholder={"What's in your mind "+user.username+ "?"}
             className="shareInput border-none w-full focus:outline-none"
+            ref={desc}
           />
         </div>
         <hr className="shareHr my-4" />
-        <div className="shareBottom flex items-center justify-between">
+        <form className="shareBottom flex items-center justify-between" onSubmit={submitHandler}>
           <div className="shareOptions flex">
-            <div className="shareOption flex items-center mr-6 cursor-pointer">
+            < label htmlFor="file" className="shareOption flex items-center mr-6 cursor-pointer">
               <BsFillImageFill className="shareIcon text-red-500 mr-1" />
               <span className="shareOptionText text-gray-700">Photo or Video</span>
-            </div>
+              <input style={{display:"none"}} type="file" id="file" accept=",png,.jpeg,.jpg" onChange={(e)=>setFile(e.target.files[0])}></input>
+            </label>
             <div className="shareOption flex items-center mr-6 cursor-pointer">
               <HiTag className="shareIcon text-blue-500 mr-1" />
               <span className="shareOptionText text-gray-700">Tag</span>
@@ -39,10 +75,10 @@ export default function Share() {
               <span className="shareOptionText text-gray-700">Feelings</span>
             </div>
           </div>
-          <button className="shareButton py-2 px-4 rounded-lg bg-green-500 text-white font-medium focus:outline-none">
+          <button type="submit" className="shareButton py-2 px-4 rounded-lg bg-green-500 text-white font-medium focus:outline-none">
             Share
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );
