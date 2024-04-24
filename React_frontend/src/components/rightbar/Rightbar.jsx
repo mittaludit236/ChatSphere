@@ -1,8 +1,43 @@
-import { Users } from "../../dummyData";
-import Online from "../online/Online";
+import React, { useContext, useState, useEffect } from 'react';
 import { IoGiftOutline } from 'react-icons/io5';
+import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai'; // React Icons for add and remove
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+import Online from '../online/Online';
+import { Users } from '../../dummyData';
 
 export default function Rightbar({ user }) {
+  const [friends, setFriends] = useState([]);
+  const { user: currentUser, dispatch } = useContext(AuthContext);
+  const [followed, setFollowed] = useState(currentUser.followings.includes(user?.id));
+
+  useEffect(() => {
+    const getFriends = async () => {
+      try {
+        const friendList = await axios.get('/users/friends/' + user._id);
+        setFriends(friendList.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getFriends();
+  }, [user]);
+
+  const handleClick = async () => {
+    try {
+      if (followed) {
+        await axios.put(`/users/${user._id}/unfollow`, { userId: currentUser._id });
+        dispatch({ type: 'UNFOLLOW', payload: user._id });
+      } else {
+        await axios.put(`/users/${user._id}/follow`, { userId: currentUser._id });
+        dispatch({ type: 'FOLLOW', payload: user._id });
+      }
+      setFollowed(!followed);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const HomeRightbar = () => {
     return (
@@ -28,6 +63,12 @@ export default function Rightbar({ user }) {
     const PF = process.env.REACT_APP_PUBLIC_FOLDER;
     return (
       <div className="flex flex-col">
+        {user.username !== currentUser.username && (
+          <button className="mt-30 mb-10px border:none bg-color:white flex items-center cursor-pointer" onClick={handleClick}>
+            {followed ? 'Unfollow' : 'Follow'}
+            {followed ? <AiOutlineMinus /> : <AiOutlinePlus />} {/* React Icons for add and remove */}
+          </button>
+        )}
         <h4 className="text-lg font-semibold mb-4">User information</h4>
         <div className="mb-6">
           <div className="flex mb-4">
@@ -44,18 +85,18 @@ export default function Rightbar({ user }) {
           </div>
         </div>
         <h4 className="text-lg font-semibold mb-4">User friends</h4>
-        <div className="flex flex-wrap -mx-2 mb-8">
-          {Users.slice(0, 6).map((user) => (
-            <div key={user.id} className="w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 px-2 mb-4">
-              <div className="flex flex-col items-center">
+        <div>
+          {friends.map((friend) => (
+            <Link to={'/profile/' + friend.username} style={{ textDecoration: 'none' }} key={friend._id}>
+              <div className="rightbarFollowing">
                 <img
-                  src={PF+ user.profilePicture}
+                  src={friend.profilePicture ? PF + friend.profilePicture : PF + 'person/noAvatar.png'}
                   alt=""
-                  className="w-20 h-20 object-cover rounded-full mb-2"
+                  className="rightbarFollowingImg"
                 />
-                <span>{user.username}</span>
+                <span className="rightbarFollowingName ">{friend.username}</span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

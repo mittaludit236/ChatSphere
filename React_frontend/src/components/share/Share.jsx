@@ -1,8 +1,9 @@
 import React, { useContext, useRef ,useState } from 'react';
-import { BsFillImageFill } from 'react-icons/bs';
+import { BiImage } from 'react-icons/bi';
 import { HiTag } from 'react-icons/hi';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { IoHappyOutline } from 'react-icons/io5';
+import { AiOutlineCloseCircle } from 'react-icons/ai'; // Alternative for cancel icon
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 
@@ -55,23 +56,29 @@ export default function Share() {
           />
         </div>
         <hr className="shareHr my-4" />
+        {file && (
+          <div className="shareImgContainer">
+            <img className="shareImg" src={URL.createObjectURL(file)} alt="" />
+            <AiOutlineCloseCircle className="shareCancelImg black" onClick={() => setFile(null)} >cancel</AiOutlineCloseCircle> {/* Alternative cancel icon */}
+          </div>
+        )}
         <form className="shareBottom flex items-center justify-between" onSubmit={submitHandler}>
           <div className="shareOptions flex">
             < label htmlFor="file" className="shareOption flex items-center mr-6 cursor-pointer">
-              <BsFillImageFill className="shareIcon text-red-500 mr-1" />
+              <BiImage className="shareIcon text-red-500 mr-1" /> {/* React Icon for image */}
               <span className="shareOptionText text-gray-700">Photo or Video</span>
               <input style={{display:"none"}} type="file" id="file" accept=",png,.jpeg,.jpg" onChange={(e)=>setFile(e.target.files[0])}></input>
             </label>
             <div className="shareOption flex items-center mr-6 cursor-pointer">
-              <HiTag className="shareIcon text-blue-500 mr-1" />
+              <HiTag className="shareIcon text-blue-500 mr-1" /> {/* React Icon for tag */}
               <span className="shareOptionText text-gray-700">Tag</span>
             </div>
             <div className="shareOption flex items-center mr-6 cursor-pointer">
-              <FaMapMarkerAlt className="shareIcon text-green-500 mr-1" />
+              <FaMapMarkerAlt className="shareIcon text-green-500 mr-1" /> {/* React Icon for location */}
               <span className="shareOptionText text-gray-700">Location</span>
             </div>
             <div className="shareOption flex items-center cursor-pointer">
-              <IoHappyOutline className="shareIcon text-yellow-500 mr-1" />
+              <IoHappyOutline className="shareIcon text-yellow-500 mr-1" /> {/* React Icon for feelings */}
               <span className="shareOptionText text-gray-700">Feelings</span>
             </div>
           </div>

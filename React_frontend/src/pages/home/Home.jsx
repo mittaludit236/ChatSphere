@@ -6,7 +6,7 @@ import Rightbar from '../../components/rightbar/Rightbar';
 
 export default function Home() {
     return (
-        <div>
+        <div style={{ overflow: 'hidden' }}> {/* Apply overflow: hidden to hide overflow */}
             <Topbar />
             <div className="flex">
                 <div className="w-1/5">
