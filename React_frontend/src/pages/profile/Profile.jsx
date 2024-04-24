@@ -32,12 +32,12 @@ export default function Profile() {
             <div className="relative h-80">
               <img
                 className="w-full h-full object-cover"
-                src={user.coverPicture || PF+"person/2.jpeg"}
+                src={user.coverPicture? PF + user.coverPicture: PF+"person/noadmin.webp"}
                 alt=""
               />
               <img
                 className="w-32 h-32 rounded-full absolute top-32 left-0 right-0 mx-auto border-4 border-white"
-                src={user.profilePicture || PF+"person/1.jpeg"}
+                src={user.profilePicture? PF.profilePicture : PF+"person/1.jpeg"}
                 alt=""
               />
             </div>
