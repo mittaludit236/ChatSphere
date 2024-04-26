@@ -21,7 +21,9 @@ router.post("/register",async(req,res)=>{
 router.post("/login",async(req,res)=>{
     try
     {
+        console.log(req.body);
         const user=await User.findOne({email: req.body.email});
+        console.log(user);
         if(!user)
         res.status(404).json("user not found");
         const vp=await bcrypt.compare(req.body.password,user.password);
@@ -31,6 +33,7 @@ router.post("/login",async(req,res)=>{
         res.status(200).json(user);
     }catch(err)
     {
+       console.log("hello");
        res.status(500).json(err);
     }
    
