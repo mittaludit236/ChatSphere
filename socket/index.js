@@ -30,6 +30,24 @@ io.on("connection", (socket) => {
       addUser(userId, socket.id);
       io.emit("getUsers", users); 
   });
+  socket.on("newConversation", ({ senderId, receiverId }) => {
+    // Handle the creation of a new conversation here
+    console.log(`New conversation requested between ${senderId} and ${receiverId}`);
+
+    // You can perform any necessary database operations to create the conversation
+
+    // Once the conversation is created, emit a "conversationCreated" event to the sender and receiver
+    const senderSocket = getUser(senderId);
+    const receiverSocket = getUser(receiverId);
+
+    if (senderSocket) {
+      io.to(senderSocket.socketId).emit("conversationCreated", { conversationId: 'your_conversation_id' });
+    }
+
+    if (receiverSocket) {
+      io.to(receiverSocket.socketId).emit("conversationCreated", { conversationId: 'your_conversation_id' });
+    }
+  });
 
   socket.on("sendMessage", ({ senderId, receiverId, text }) => {
       const user = getUser(receiverId);
