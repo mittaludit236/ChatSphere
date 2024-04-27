@@ -1,6 +1,7 @@
 const router=require("express").Router();
 const Post=require("../models/Post");
 const User=require("../models/User");
+const mongoose=require("mongoose");
 router.post("/",async(req,res)=>{
     const newPost=new Post(req.body);
     try{
@@ -45,6 +46,27 @@ router.delete("/:id",async(req,res)=>{
         res.status(500).json(err);
     }
     
+});
+router.get("/comments", async (req, res) => {
+    console.log("hello");
+    const postId= req.query.postId.trim(); // Ensure you're extracting the postId correctly.
+    console.log(postId);
+    try {
+        //Validate postId
+        // if (!mongoose.Types.ObjectId.isValid(postId)) {
+        //     return res.status(400).json({ message: "Invalid postId provided" });
+        // }
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+        res.status(200).json(post.comments);
+        //res.status(200).json({message: "hello"});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error retrieving comments", error: err.message });
+    }
 });
 router.put("/:id/like",async(req,res)=>{
     try{
@@ -103,4 +125,35 @@ router.get("/profile/:username", async (req, res) => {
       res.status(500).json(err);
     }
   });
+  router.post("/comments", async (req, res) => {
+    const { userId, postId, description } = req.body;
+
+    try {
+        // Find the post by postId
+        const post = await Post.findById(postId);
+        
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        // Create a new comment
+        const comment = {
+            userId,
+            description
+        };
+
+        // Add the comment to the comments array of the post
+        post.comments.push(comment);
+
+        // Save the updated post
+        const updatedPost = await post.save();
+
+        // Send the updated post back to the client
+        res.status(200).json(updatedPost);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error adding comment", error: err.message });
+    }
+});
+
 module.exports=router;
