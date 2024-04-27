@@ -167,5 +167,20 @@ router.put("/:id/unfollow",async(req,res)=>{
     else
     res.status(403).json("you cant unfollow yourself");
 
-})
+});
+router.post("/search",async(req,res)=>{
+    const find_prof = req.body.find_prof;
+    try {
+      if (find_prof === '') {
+        res.status(200).json([]);
+      } else {
+        // Using regular expression for case-insensitive search
+        const users = await User.find({ username: { $regex: new RegExp(find_prof, 'i') } });
+        res.status(200).json(users);
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json(err);
+    }
+  });
 module.exports=router;

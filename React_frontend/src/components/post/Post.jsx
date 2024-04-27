@@ -5,7 +5,7 @@ import axios from "axios";
 import { format } from "timeago.js";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-
+import CommentModal from "../comment/Comments"
 
 
 export default function Post({ post }) {
@@ -14,6 +14,7 @@ export default function Post({ post }) {
   const [user, setUser] = useState({});
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const { user: currentUser } = useContext(AuthContext)
+  const [showComments, setShowComments] = useState(false); 
 
    useEffect(()=>{
     setIsLiked(post.likes.includes(currentUser._id))
@@ -22,9 +23,9 @@ export default function Post({ post }) {
   const likeHandler = () => {
 
     try {
-
-    } catch (err) {
       axios.put("/posts/" + post._id + "/like", { userId: currentUser._id })
+    } catch (err) {
+      
     }
     setLike(isLiked ? like - 1 : like + 1);
     setIsLiked(!isLiked);
@@ -37,7 +38,9 @@ export default function Post({ post }) {
     fetchUser();
   }, [post.userId]);
 
-
+  const toggleCommentsModal = () => {
+    setShowComments(!showComments);
+  };
   return (
     <div className="w-full rounded-md shadow-md my-8">
       <div className="p-4">
@@ -80,12 +83,13 @@ export default function Post({ post }) {
             <span className="text-sm">{like} people like it</span>
           </div>
           <div>
-            <span className="text-sm cursor-pointer border-b border-gray-400">
+          <span className="text-sm cursor-pointer border-b border-gray-400" onClick={toggleCommentsModal}>
               {post.comment} comments
             </span>
           </div>
         </div>
       </div>
+      {showComments && <CommentModal postId={post._id} closeModal={toggleCommentsModal} />}
     </div>
   );
 }
