@@ -51,7 +51,10 @@ const Topbar = () => {
       </div>
       <div className="flex-4 flex items-center justify-around text-white mr-20 ml-20">
         <div className="mr-4">
+          <Link to='/'>
           <span className="cursor-pointer ml-10">Homepage</span>
+          </Link>
+          
           <span className="ml-2 cursor-pointer ml-10">Timeline</span>
         </div>
         <div className="flex ml-20">

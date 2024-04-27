@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import Modal from './Modal';
 import axios from "axios";
 import { io } from "socket.io-client";
+import ChatTop from "./chatTop";
 
 export default function Messenger() {
     const [conversations, setConversations] = useState([]);
@@ -24,7 +25,7 @@ export default function Messenger() {
     // State for search input value
     const [searchResults, setSearchResults] = useState([]); // State for storing search results
     const PF = process.env.REACT_APP_PUBLIC_FOLDER;
-
+    // const sender = messages[0].sender; 
     const handleChange = (e) => {
         setSearchInput(e.target.value);
         // Make a request to the backend when search input changes
@@ -77,7 +78,6 @@ export default function Messenger() {
         const getConversations = async () => {
             try {
                 const res = await axios.get("/conversations/" + user._id);
-                console.log(res);
                 setConversations(res.data);
             } catch (err) {
                 console.log(err);
@@ -90,6 +90,7 @@ export default function Messenger() {
         const getMessages = async () => {
             try {
                 const res = await axios.get("/messages/" + currentChat?._id);
+                console.log("res",res);
                 setMessages(res.data);
             } catch (err) {
                 console.log(err);
@@ -126,7 +127,13 @@ export default function Messenger() {
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
-
+    const handleConversationClick = (conversationId) => {
+        // Find the conversation with the selected ID
+        const selectedConversation = conversations.find((c) => c._id === conversationId);
+        // Set the current chat to the selected conversation
+        setCurrentChat(selectedConversation);
+    };
+    
     return (
         <div className="h-screen bg-gray-100 flex flex-col relative">
             <Topbar />
@@ -151,7 +158,7 @@ export default function Messenger() {
                     )}
                     <div className="overflow-y-auto">
                         {conversations.map((c) => (
-                            <div key={c._id} ref={scrollRef} onClick={() => setCurrentChat(c)} className="cursor-pointer text-black">
+                            <div key={c._id} ref={scrollRef} onClick={() => handleConversationClick(c._id)} className="cursor-pointer text-black">
                                 <Conversation conversation={c} currentUser={user} />
                             </div>
                         ))}
@@ -163,48 +170,55 @@ export default function Messenger() {
                     <div className="flex-grow border-b border-r border-gray-300 relative z-0">
                         {
                             currentChat ?
-                                <>
+                                <>  
+                                    <div>
+                                    <ChatTop currentUser={user} clickedUser={currentChat} />
+                                    </div>
                                     <div className="p-4 overflow-y-auto">
                                         <div className="chatBoxTop flex-1 overflow-y-auto pr-10" style={{ maxHeight: "calc(100vh - 200px)" }}>
                                             {messages.map((m, index) => (
-                                                <div key={index} ref={scrollRef} className={m.own ? 'flex justify-end ' : 'flex justify-start'}>
-                                                    <Message message={m} own={m.sender === user._id} />
-                                                </div>
+                                              <div key={index} ref={scrollRef} className={(m.sender===user._id) ? 'flex justify-end' : 'flex justify-start'}>
+                                              <Message message={m} own={m.sender === user._id} />
+                                          </div>
+                                          
                                             ))}
                                         </div>
                                     </div>
 
-                        <div className="p-4" style={{ position: 'absolute', bottom: '0', left: '0', width: '100%' }}>
-                            <div className="flex items-center justify-between">
-                                <textarea
-                                    className="chatMessageInput flex-grow h-24 px-4 py-2 resize-none border rounded-md mr-2"
-                                    placeholder="Write something..."
-                                    onChange={(e) => setNewMessage(e.target.value)}
-                                    value={newMessage}
-                                ></textarea>
-                                <button className="px-6 py-2 rounded bg-teal-500 text-white font-semibold hover:bg-teal-600 focus:outline-none focus:bg-teal-600 transition duration-300 ease-in-out transform hover:scale-105" onClick={handleSubmit}>
-                                    Send
-                                </button>
-                            </div>
+                                    <div className="p-4" style={{ position: 'absolute', bottom: '0', left: '0', width: '100%' }}>
+                                        <div className="flex items-center justify-between">
+                                            <textarea
+                                                className="chatMessageInput flex-grow h-24 px-4 py-2 resize-none border rounded-md mr-2"
+                                                placeholder="Write something..."
+                                                onChange={(e) => setNewMessage(e.target.value)}
+                                                value={newMessage}
+                                            ></textarea>
+                                            <button className="px-6 py-2 rounded bg-teal-500 text-white font-semibold hover:bg-teal-600 focus:outline-none focus:bg-teal-600 transition duration-300 ease-in-out transform hover:scale-105" onClick={handleSubmit}>
+                                                Send
+                                            </button>
+                                        </div>
+                                    </div>
+
+
+                                </> : <body class="flex justify-center items-center h-screen bg-gradient-to-br from-blue-200 to-purple-300">
+                                    <span class="noConversationText text-6xl text-white font-bold text-center shadow-lg p-6 rounded-lg">
+                                        Open a conversation <br /> to start a chat.
+                                    </span>
+                                </body>
+                        }
+                    </div>
+                    {/* Chat Online section on the right */}
+                    <div className="w-1/4 border-l border-gray-300">
+                        <div className="p-4">
+                            <ChatOnline
+                                onlineUsers={onlineUsers}
+                                currentId={user._id}
+                                setCurrentChat={setCurrentChat}
+                            />
                         </div>
-
-
-                    </> : <span className="noConversationText ">
-                        Open a conversation to start a chat.
-                    </span>}
-                </div>
-                {/* Chat Online section on the right */}
-                <div className="w-1/4 border-l border-gray-300">
-                    <div className="p-4">
-                        <ChatOnline
-                            onlineUsers={onlineUsers}
-                            currentId={user._id}
-                            setCurrentChat={setCurrentChat}
-                        />
                     </div>
                 </div>
             </div>
-        </div>
         </div >
     );
 

@@ -32,6 +32,7 @@ router.put("/:id",async(req,res)=>{
 });
 router.delete("/:id",async(req,res)=>{
     try{
+        console.log("post",req.params.id);
         const post=await Post.findById(req.params.id);
     if(post.userId==req.body.userId)
     {
