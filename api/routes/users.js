@@ -61,6 +61,41 @@ router.get("/", async (req, res) => {
       res.status(500).json(err);
     }
   });
+  
+
+  router.put('/', async (req, res) => {
+    try {
+        const { name, city } = req.body;
+        const userId = req.query.userId;
+        const username = req.query.username;
+        console.log(username);
+        console.log(city);
+        console.log(name);
+        
+        // Find the user by userId if provided, otherwise by username
+        const user = userId
+            ? await User.findById(userId)
+            : await User.findOne({ username: username });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Update user's name and city
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: user._id },
+            { $set: { name, city } },
+            { new: true } // Return the updated user
+        );
+
+        res.status(200).json(updatedUser);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+
   // get friends 
 router.get("/friends/:userId", async (req, res) => {
     try {

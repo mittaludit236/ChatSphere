@@ -6,9 +6,12 @@ import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import { AuthContext } from './context/AuthContext';
 import Messenger from './messenger/messenger';
+import SettingsModal from './components/settings/SettingsModal';
+
 function App() {
   const { user } = useContext(AuthContext);
- console.log("user exiist kart bhi hai????",user)
+  console.log("user exiist kart bhi hai????",user);
+
   return (
     <Router>
       <Routes>
@@ -17,6 +20,9 @@ function App() {
         <Route path="/messenger" element={!user ? <Navigate to="/" /> : <Messenger />} />
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/" element={user ? <Home /> : <Register />} />
+        
+        {/* Route for settings with SettingsModal component */}
+        <Route path="/settings/:username" element={<SettingsModal />} />
       </Routes>
     </Router>
   );
