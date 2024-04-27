@@ -36,6 +36,7 @@ export default function Share() {
       window.location.reload();
     } catch (err) {}
   };
+
   return (
     <div className="share w-full h-48 rounded-lg shadow-md">
       <div className="shareWrapper p-4">
@@ -57,14 +58,14 @@ export default function Share() {
         </div>
         <hr className="shareHr my-4" />
         {file && (
-          <div className="shareImgContainer">
-            <img className="shareImg" src={URL.createObjectURL(file)} alt="" />
-            <AiOutlineCloseCircle className="shareCancelImg black" onClick={() => setFile(null)} >cancel</AiOutlineCloseCircle> {/* Alternative cancel icon */}
+          <div className="shareImgContainer relative w-16 h-16">
+            <img className="shareImg w-full h-full object-cover rounded-md" src={URL.createObjectURL(file)} alt="" />
+            <AiOutlineCloseCircle className="shareCancelImg absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-white rounded-full p-1 cursor-pointer" onClick={() => setFile(null)} />
           </div>
         )}
         <form className="shareBottom flex items-center justify-between" onSubmit={submitHandler}>
           <div className="shareOptions flex">
-            < label htmlFor="file" className="shareOption flex items-center mr-6 cursor-pointer">
+            <label htmlFor="file" className="shareOption flex items-center mr-6 cursor-pointer">
               <BiImage className="shareIcon text-red-500 mr-1" /> {/* React Icon for image */}
               <span className="shareOptionText text-gray-700">Photo or Video</span>
               <input style={{display:"none"}} type="file" id="file" accept=",png,.jpeg,.jpg" onChange={(e)=>setFile(e.target.files[0])}></input>

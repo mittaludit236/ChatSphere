@@ -29,7 +29,7 @@ export default function Conversation({ conversation, currentUser }) {
           }
           alt=""
         />
-        <span className="font-medium">{user?.username}</span>
+        <span className="font-medium">{user?.username} </span>
       </div>
     )
 }
