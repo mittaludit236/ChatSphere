@@ -7,7 +7,7 @@ import Register from "./pages/register/Register";
 import { AuthContext } from './context/AuthContext';
 import Messenger from './messenger/messenger';
 import SettingsModal from './components/settings/SettingsModal';
-
+import CreateGroup from "./messenger/createGroup"
 function App() {
   const { user } = useContext(AuthContext);
   console.log("user exiist kart bhi hai????",user);
@@ -18,6 +18,7 @@ function App() {
         <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
         <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
         <Route path="/messenger" element={!user ? <Navigate to="/" /> : <Messenger />} />
+        <Route path="/messenger/createGroup" element={user ?  <CreateGroup/> :<Register/>}/>
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/" element={user ? <Home /> : <Register />} />
         

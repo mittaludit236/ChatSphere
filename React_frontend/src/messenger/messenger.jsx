@@ -9,8 +9,13 @@ import { useState, useEffect } from "react";
 import Modal from './Modal';
 import axios from "axios";
 import { io } from "socket.io-client";
-
+import { RiEmotionLine } from 'react-icons/ri';
+import EmojiPicker from "emoji-picker-react"
+import { BiDotsVertical } from 'react-icons/bi';
+import { BiSearch } from 'react-icons/bi';
+import { AiOutlineClose } from 'react-icons/ai';
 export default function Messenger() {
+    const [showSearchBar, setShowSearchBar] = useState(false);
     const [conversations, setConversations] = useState([]);
     const [currentChat, setCurrentChat] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -127,13 +132,70 @@ export default function Messenger() {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+
+    //hook for emoji 
+    const [open, setOpen] = useState(false);
+
+    const handleEmoji = e => {
+        setNewMessage((prev) => prev + e.emoji);
+        setOpen(false);
+    }
+    const toggleSearchBar = () => {
+        setShowSearchBar(!showSearchBar);
+    };
+    const [showDropdown, setShowDropdown] = useState(false);
+
+    const toggleDropdown = () => {
+        setShowDropdown((prev) => !prev);
+    };
+    const [showCreateGroupDiv, setShowCreateGroupDiv] = useState(false);
+    const toggleCreateGroupDiv = () => {
+        setShowCreateGroupDiv((prev) => !prev);
+    };
+    const closeCreateGroupDiv = () => {
+        setShowCreateGroupDiv(false);
+        setShowDropdown(false);
+    };
     return (
         <div className="h-screen bg-gray-100 flex flex-col relative">
             <Topbar />
+            {showCreateGroupDiv && (
+                <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-[500px] h-[500px] bg-blue-300 shadow-md rounded-md mt-2">
+                    <div className="absolute top-0 right-0 p-2">
+            <AiOutlineClose className="text-gray-600 cursor-pointer" onClick={closeCreateGroupDiv} />
+        </div>
+    {/* Your content for creating a group */}
+    {/* You can add inputs, buttons, etc. */}
+    <div>Create Group</div>
+</div>
+            )}
             <div className="flex-grow flex">
                 {/* Conversations on the left */}
                 <div className="w-1/4 border-r border-gray-300 relative z-10">
-                    <div className="p-4">
+                <div className="p-4 flex justify-between items-center relative">
+                    {/* Search icon */}
+                    <div className="text-gray-400 text-xl cursor-pointer" onClick={toggleSearchBar}>
+                        <BiSearch />
+                    </div>
+
+                    {/* Three dots icon */}
+                    <div className="text-gray-400 cursor-pointer" onClick={toggleDropdown}>
+                        <BiDotsVertical />
+                    </div>
+                    {showDropdown && (
+                <div className="absolute top-full right-0 bg-white shadow-md rounded-md mt-2">
+                    <ul>
+                    <button className="py-2 px-4" onClick={toggleCreateGroupDiv}>Create Group</button>
+                        <li className="py-2 px-4">Settings</li>
+                        <li className="py-2 px-4">Block User</li>
+                    </ul>
+                </div>
+            )}
+                </div>
+
+                {/* Search bar */}
+                {showSearchBar && (
+                    <div className="p-4 relative">
                         <input
                             type="text"
                             placeholder="Search for friends"
@@ -141,7 +203,10 @@ export default function Messenger() {
                             value={searchInput}
                             onChange={handleChange}
                         />
+                        
                     </div>
+                )}
+
                     {searchResults.length > 0 && (
                         <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-lg z-20">
                             {searchResults.map((userData) => (
@@ -167,44 +232,55 @@ export default function Messenger() {
                                     <div className="p-4 overflow-y-auto">
                                         <div className="chatBoxTop flex-1 overflow-y-auto pr-10" style={{ maxHeight: "calc(100vh - 200px)" }}>
                                             {messages.map((m, index) => (
-                                                <div key={index} ref={scrollRef} className={m.own ? 'flex justify-end ' : 'flex justify-start'}>
+                                                <div key={index} ref={scrollRef} className={m.sender === user._id ? 'flex justify-end ' : 'flex justify-start'}>
                                                     <Message message={m} own={m.sender === user._id} />
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
 
-                        <div className="p-4" style={{ position: 'absolute', bottom: '0', left: '0', width: '100%' }}>
-                            <div className="flex items-center justify-between">
-                                <textarea
-                                    className="chatMessageInput flex-grow h-24 px-4 py-2 resize-none border rounded-md mr-2"
-                                    placeholder="Write something..."
-                                    onChange={(e) => setNewMessage(e.target.value)}
-                                    value={newMessage}
-                                ></textarea>
-                                <button className="px-6 py-2 rounded bg-teal-500 text-white font-semibold hover:bg-teal-600 focus:outline-none focus:bg-teal-600 transition duration-300 ease-in-out transform hover:scale-105" onClick={handleSubmit}>
-                                    Send
-                                </button>
-                            </div>
+                                    <div className="p-4" style={{ position: 'absolute', bottom: '0', left: '0', width: '100%' }}>
+                                        <div className="flex items-center justify-between">
+                                            <textarea
+                                                className="chatMessageInput flex-grow h-24 px-4 py-2 resize-none border rounded-md mr-2"
+                                                placeholder="Write something..."
+                                                onChange={(e) => setNewMessage(e.target.value)}
+                                                value={newMessage}
+                                            ></textarea>
+                                            <div className="relative">
+                                                <div>
+                                                    <RiEmotionLine className="text-gray-500 text-2xl mr-2 cursor-pointer" onClick={() => setOpen(!open)} />
+                                                </div>
+                                                {open && (
+                                                    <div className="absolute bottom-full left-0 z-10">
+                                                        <EmojiPicker onEmojiClick={handleEmoji} />
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <button className="px-6 py-2 rounded bg-teal-500 text-white font-semibold hover:bg-teal-600 focus:outline-none focus:bg-teal-600 transition duration-300 ease-in-out transform hover:scale-105" onClick={handleSubmit}>
+                                                Send
+                                            </button>
+                                        </div>
+                                    </div>
+
+
+                                </> : <span className="noConversationText ">
+                                    Open a conversation to start a chat.
+                                </span>}
+                    </div>
+                    {/* Chat Online section on the right */}
+                    <div className="w-1/4 border-l border-gray-300">
+                        <div className="p-4">
+                            <ChatOnline
+                                onlineUsers={onlineUsers}
+                                currentId={user._id}
+                                setCurrentChat={setCurrentChat}
+                            />
                         </div>
-
-
-                    </> : <span className="noConversationText ">
-                        Open a conversation to start a chat.
-                    </span>}
-                </div>
-                {/* Chat Online section on the right */}
-                <div className="w-1/4 border-l border-gray-300">
-                    <div className="p-4">
-                        <ChatOnline
-                            onlineUsers={onlineUsers}
-                            currentId={user._id}
-                            setCurrentChat={setCurrentChat}
-                        />
                     </div>
                 </div>
             </div>
-        </div>
         </div >
     );
 
