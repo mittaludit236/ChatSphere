@@ -7,7 +7,7 @@ export default function Topbar() {
   const { user } = useContext(AuthContext);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   return (
-    <div className="bg-blue-500 h-16 w-full flex items-center sticky top-0 z-999">
+    <div className="bg-blue-500 h-16 w-full flex items-center sticky top-0 z-10000000">
       <div className="flex-3 pl-4 mr-4">
         <Link to ="/" >
         <span className="text-white text-xl font-bold cursor-pointer ml-10 mr-20">ChatSphere</span>

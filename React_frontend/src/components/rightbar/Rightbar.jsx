@@ -31,17 +31,17 @@ export default function Rightbar({ user }) {
 
   const handleClick = async () => {
     try {
-      console.log("before",followed)
+      console.log("before", followed)
       if (followed) {
         await axios.put(`/users/${user._id}/unfollow`, { userId: currentUser._id });
         dispatch({ type: 'UNFOLLOW', payload: user._id });
       } else {
         await axios.put(`/users/${user._id}/follow`, { userId: currentUser._id });
         dispatch({ type: 'FOLLOW', payload: user._id });
-        
+
       }
       setFollowed(!followed);
-      console.log("after",followed)
+      console.log("after", followed)
     } catch (err) {
       console.log(err);
     }
@@ -77,6 +77,7 @@ export default function Rightbar({ user }) {
             {followed ? <AiOutlineMinus /> : <AiOutlinePlus />}
           </button>
         )}
+        <div>
         <h4 className="text-lg font-semibold mb-4">User information</h4>
         <div className="mb-6">
           <div className="flex mb-4">
@@ -93,20 +94,24 @@ export default function Rightbar({ user }) {
           </div>
         </div>
         <h4 className="text-lg font-semibold mb-4">User friends</h4>
-        <div>
+        <div className='friend'>
           {friends.map((friend) => (
             <Link to={'/profile/' + friend.username} style={{ textDecoration: 'none' }} key={friend._id}>
-              <div className="rightbarFollowing">
+              <div className="rightbarFollowing flex items-center">
                 <img
                   src={friend.profilePicture ? PF + friend.profilePicture : PF + 'person/noadmin.webp'}
                   alt=""
-                  className="rightbarFollowingImg"
+                  className="rightbarFollowingImg rounded-full w-8 h-8 mr-2" // Added rounded-full and adjusted width and height
                 />
-                <span className="rightbarFollowingName ">{friend.username}</span>
+                <span className="font-medium">{friend.username}</span> {/* Username */}
               </div>
+
+
             </Link>
           ))}
         </div>
+        </div>
+       
       </div>
     );
   };
