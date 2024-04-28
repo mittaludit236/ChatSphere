@@ -70,52 +70,55 @@ export default function Rightbar({ user }) {
   const ProfileRightbar = () => {
     const PF = process.env.REACT_APP_PUBLIC_FOLDER;
     return (
-      <div className="flex flex-col">
+      <div className="rightbar-profile">
         {user.username !== currentUser.username && (
-          <button className="mt-30 mb-10px border:none bg-color:white flex items-center cursor-pointer" onClick={handleClick}>
-            {followed ? 'Unfollow' : 'Follow'}
-            {followed ? <AiOutlineMinus /> : <AiOutlinePlus />}
-          </button>
+        <button
+        className={`follow-button mt-4 mb-2 rounded-full border-none bg-${followed ? 'red' : 'green'}-500 text-white flex items-center cursor-pointer hover:bg-${followed ? 'red' : 'green'}-600 transition duration-300 ease-in-out shadow-md py-2 px-4`}
+        onClick={handleClick}
+      > 
+        {followed ? 'Unfollow' : 'Follow'}
+        {followed ? <AiOutlineMinus className="icon ml-2" /> : <AiOutlinePlus className="icon ml-2" />}
+      </button>
+      
+       
         )}
-        <div>
-        <h4 className="text-lg font-semibold mb-4">User information</h4>
-        <div className="mb-6">
-          <div className="flex mb-4">
-            <span className="font-semibold mr-2">City:</span>
-            <span>{user.city}</span>
-          </div>
-          <div className="flex mb-4">
-            <span className="font-semibold mr-2">From:</span>
-            <span>{user.from}</span>
-          </div>
-          <div className="flex mb-4">
-            <span className="font-semibold mr-2">Relationship:</span>
-            <span>{user.relationship}</span>
+        <div className="user-info-section">
+          <h4 className="text-lg font-semibold mb-4">User Information</h4>
+          <div className="mb-6">
+            <div className="flex mb-4">
+              <span className="font-semibold mr-2">City:</span>
+              <span>{user.city}</span>
+            </div>
+            <div className="flex mb-4">
+              <span className="font-semibold mr-2">From:</span>
+              <span>{user.from}</span>
+            </div>
+            <div className="flex mb-4">
+              <span className="font-semibold mr-2">Relationship:</span>
+              <span>{user.relationship}</span>
+            </div>
           </div>
         </div>
-        <h4 className="text-lg font-semibold mb-4">User friends</h4>
-        <div className='friend'>
+        <h4 className="text-lg font-semibold mb-4">User Friends</h4>
+        <div className="friends-list overflow-y-auto border border-gray-300 rounded-lg p-2">
           {friends.map((friend) => (
-            <Link to={'/profile/' + friend.username} style={{ textDecoration: 'none' }} key={friend._id}>
-              <div className="rightbarFollowing flex items-center">
+            <Link to={'/profile/' + friend.username} className="friend-link" key={friend._id}>
+              <div className="friend-item flex items-center border-b py-2">
                 <img
                   src={friend.profilePicture ? PF + friend.profilePicture : PF + 'person/noadmin.webp'}
                   alt=""
-                  className="rightbarFollowingImg rounded-full w-8 h-8 mr-2" // Added rounded-full and adjusted width and height
+                  className="friend-image rounded-full w-8 h-8 mr-2"
                 />
-                <span className="font-medium">{friend.username}</span> {/* Username */}
+                <span className="friend-username font-medium">{friend.username}</span>
               </div>
-
-
             </Link>
           ))}
         </div>
-        </div>
-       
       </div>
     );
   };
-
+  
+  
   return (
     <div className="hidden md:flex md:flex-1.5 md:flex-col md:justify-center md:items-center">
       <div className="p-4 rightbar">
