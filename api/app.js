@@ -51,6 +51,32 @@ const storage = multer.diskStorage({
         return res.status(500).json("File upload failed.");
     }
 });
+const profilePictureStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, "uploads/profiles"); // Set the destination folder for profile pictures
+  },
+  filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname); // Get the file extension
+      cb(null, "profile-" + Date.now() + ext); // Set the filename to include a timestamp
+  },
+});
+
+// Initialize multer upload for profile pictures
+const uploadProfilePicture = multer({ storage: profilePictureStorage });
+
+// Endpoint for uploading profile pictures
+app.post("/api/upload/profile", uploadProfilePicture.single("profileImage"), (req, res) => {
+  try {
+      if (!req.file) {
+          return res.status(400).json({ message: "No file uploaded." });
+      }
+      console.log("Profile picture uploaded successfully:", req.file.filename);
+      return res.status(200).json({ message: "Profile picture uploaded successfully.", filename: req.file.filename });
+  } catch (err) {
+      console.error("Error uploading profile picture:", err);
+      return res.status(500).json({ message: "Profile picture upload failed." });
+  }
+});
 
 app.use("/api/users",userRoute);
 app.use("/api/auth",authRoute);

@@ -5,8 +5,9 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import CommentModal from "../comment/Comments";
-
-export default function Post({ post ,x}) {
+import { FaRegCommentAlt } from "react-icons/fa";
+export default function Post({ post, x }) {
+  // console.log("post",post.comments.length);
   const [like, setLike] = useState(post.likes.length);
   const [isLiked, setIsLiked] = useState(false);
   const [user, setUser] = useState({});
@@ -75,10 +76,10 @@ export default function Post({ post ,x}) {
             <span className="text-sm text-gray-500 ml-2">{format(post.createdAt)}</span>
           </div>
           {post.userId === currentUser._id && x && ( // Conditionally render delete icon
-           <div className="text-gray-500 cursor-pointer hover:text-blue-500">
-           <MdDelete onClick={handleDeleteConfirmation} />
-         </div>
-         
+            <div className="text-gray-500 cursor-pointer hover:text-blue-500">
+              <MdDelete onClick={handleDeleteConfirmation} />
+            </div>
+
           )}
         </div>
         <div className="mt-4">
@@ -102,10 +103,15 @@ export default function Post({ post ,x}) {
             <span className="text-sm">{like} people like it</span>
           </div>
           <div>
-            <span className="text-sm cursor-pointer border-b border-gray-400" onClick={toggleCommentsModal}>
-              {post.comment} comments
+            <span className="text-sm cursor-pointer border-gray-400 flex items-center" onClick={toggleCommentsModal}>
+              <FaRegCommentAlt className="mr-2 text-gray-600" /> {/* Adjust color and add margin */}
+              {post.comments.length !== 0 && (
+                <span className="text-black-600">{post.comments.length}</span>
+              )}
             </span>
           </div>
+
+
         </div>
       </div>
       {showComments && <CommentModal postId={post._id} closeModal={toggleCommentsModal} />}
