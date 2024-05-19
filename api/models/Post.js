@@ -28,7 +28,12 @@ const PostSchema=new mongoose.Schema({
         type: Array,
         default:[]
     },
+    closeFriend:{
+       type:Boolean,
+       default:false
+    },
     comments: [CommentSchema],
+    
 },
 {timestamps: true}
 );

@@ -183,4 +183,72 @@ router.post("/search",async(req,res)=>{
       res.status(500).json(err);
     }
   });
+
+//close friends
+  router.put("/:id/closef",async(req,res)=>{
+    console.log("hello");
+    if(req.body.userId!=req.params.id)
+    {
+        try{
+            const currUser=await User.findById(req.body.userId);
+            if(!currUser.closeFriend.includes(req.params.id) && currUser.followings.includes(req.params.id))
+            {
+                await currUser.updateOne({$push:{closeFriend: req.params.id}});
+                res.status(200).json("user closeFriend");
+            }
+            else
+            res.status(403).json("you do not follow   this user or user already close friend");
+        }catch(err)
+        {
+            res.status(500).json(err);
+        }
+    }
+    else
+    res.status(403).json("you cant follow yourself");
+
+});
+router.put("/:id/rclosef",async(req,res)=>{
+    if(req.body.userId!=req.params.id)
+    {
+        try{
+            const currUser=await User.findById(req.body.userId);
+            if(currUser.closeFriend.includes(req.params.id) && currUser.followings.includes(req.params.id))
+            {
+                await currUser.updateOne({$pull:{closeFriend: req.params.id}});
+                res.status(200).json("user closeFriend");
+            }
+            else
+            res.status(403).json("you do not follow   this user or user already close friend");
+        }catch(err)
+        {
+            res.status(500).json(err);
+        }
+    }
+    else
+    res.status(403).json("you cant follow yourself");
+
+});
+
+router.get("/cfriends/:userId", async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        console.log("user:", user); // Check if user object is retrieved successfully
+        const friends = await Promise.all(
+            user.closeFriend.map(friendsId => {
+                return User.findById(friendsId);
+            })
+        );
+        console.log("friends:", friends); // Check if friends array is populated
+        let friendList = [];
+        friends.map(friend => {
+            const { _id, username, profilePicture } = friend;
+            friendList.push({ _id, username, profilePicture });
+        });
+        console.log("friendList:", friendList); // Check the final friendList array
+        res.status(200).json(friendList);
+    } catch (err) {
+        console.error(err); // Log any errors to console
+        res.status(500).json(err);
+    }
+});
 module.exports=router;
