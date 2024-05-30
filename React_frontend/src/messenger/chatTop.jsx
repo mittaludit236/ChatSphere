@@ -4,7 +4,6 @@ import axios from 'axios'; // Import axios for making HTTP requests
 
 const ChatTop = ({ user,senderId, selected}) => {
     console.log("current->",selected)
-    // console.log("senderid",senderId)
     const [senderUsername, setSenderUsername] = useState(''); // State to store sender's username
 
     useEffect(() => {
