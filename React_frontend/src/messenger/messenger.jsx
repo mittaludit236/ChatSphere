@@ -7,11 +7,12 @@ import { AuthContext } from "../context/AuthContext";
 import { useContext, useRef } from "react";
 import { useState, useEffect } from "react";
 import Modal from './Modal';
+import CreateGroup from './createGroup'; // Import CreateGroup component
 import axios from "axios";
 import { io } from "socket.io-client";
 import ChatTop from "./chatTop";
 import { RiEmotionLine } from 'react-icons/ri';
-import EmojiPicker from "emoji-picker-react"
+import EmojiPicker from "emoji-picker-react";
 import { BiDotsVertical } from 'react-icons/bi';
 import { BiSearch } from 'react-icons/bi';
 import { AiOutlineClose } from 'react-icons/ai';
@@ -28,18 +29,14 @@ export default function Messenger() {
     const { user } = useContext(AuthContext);
     const scrollRef = useRef();
     const [searchInput, setSearchInput] = useState('');
-    // State for search input value
-    const [searchResults, setSearchResults] = useState([]); // State for storing search results
+    const [searchResults, setSearchResults] = useState([]);
     const PF = process.env.REACT_APP_PUBLIC_FOLDER;
-    // const sender = messages[0].sender; 
+
     const handleChange = (e) => {
         setSearchInput(e.target.value);
-        // Make a request to the backend when search input changes
         axios.post('/messages/search', { find_prof: e.target.value, userId: user._id })
             .then((response) => {
-                // console.log("friend",response);
                 setSearchResults(response.data);
-                console.log("fornr", searchResults) // Set search results state with data from the backend
             })
             .catch((error) => {
                 console.error('Error searching:', error);
@@ -84,6 +81,7 @@ export default function Messenger() {
         const getConversations = async () => {
             try {
                 const res = await axios.get("/conversations/" + user._id);
+                console.log("conversations",res);
                 setConversations(res.data);
             } catch (err) {
                 console.log(err);
@@ -96,7 +94,6 @@ export default function Messenger() {
         const getMessages = async () => {
             try {
                 const res = await axios.get("/messages/" + currentChat?._id);
-                console.log("res", res);
                 setMessages(res.data);
             } catch (err) {
                 console.log(err);
@@ -128,61 +125,58 @@ export default function Messenger() {
         } catch (err) {
             console.log(err);
         }
-    }
+    };
 
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
+
     const handleConversationClick = (conversationId) => {
-        // Find the conversation with the selected ID
         const selectedConversation = conversations.find((c) => c._id === conversationId);
-        // Set the current chat to the selected conversation
         setCurrentChat(selectedConversation);
     };
+
     const [open, setOpen] = useState(false);
 
     const handleEmoji = e => {
         setNewMessage((prev) => prev + e.emoji);
         setOpen(false);
-    }
+    };
+
     const toggleSearchBar = () => {
         setShowSearchBar(!showSearchBar);
     };
+
     const [showDropdown, setShowDropdown] = useState(false);
 
     const toggleDropdown = () => {
         setShowDropdown((prev) => !prev);
     };
+
     const [showCreateGroupDiv, setShowCreateGroupDiv] = useState(false);
     const toggleCreateGroupDiv = () => {
         setShowCreateGroupDiv((prev) => !prev);
     };
+
     const closeCreateGroupDiv = () => {
         setShowCreateGroupDiv(false);
         setShowDropdown(false);
     };
+
     return (
         <div className="h-screen bg-gray-100 flex flex-col relative">
             <Topbar />
             {showCreateGroupDiv && (
-                <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-[500px] h-[500px] bg-blue-300 shadow-md rounded-md mt-2">
-                    <div className="absolute top-0 right-0 p-2">
-                        <AiOutlineClose className="text-gray-600 cursor-pointer" onClick={closeCreateGroupDiv} />
-                    </div>
-                    {/* Your content for creating a group */}
-                    {/* You can add inputs, buttons, etc. */}
-                    <div>Create Group</div>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <CreateGroup closeModal={closeCreateGroupDiv} />
                 </div>
             )}
             <div className="flex-grow flex">
-                {/* Conversations on the left */}
                 <div className="w-1/4 border-r border-gray-300 relative z-10">
                     <div className="p-4 flex justify-between items-center relative">
-                        {/* Search icon */}
                         <div className="text-gray-400 text-xl cursor-pointer" onClick={toggleSearchBar}>
                             <BiSearch />
                         </div>
-                        {/* Three dots icon */}
                         <div className="text-gray-400 cursor-pointer" onClick={toggleDropdown}>
                             <BiDotsVertical />
                         </div>
@@ -223,9 +217,7 @@ export default function Messenger() {
                         ))}
                     </div>
                 </div>
-                {/* Messages and Chat Online section */}
                 <div className="flex-grow flex relative z-0">
-                    {/* Messages section */}
                     <div className="flex-grow border-b border-r border-gray-300 relative z-0">
                         {currentChat ? (
                             <div className="flex flex-col">
@@ -273,8 +265,6 @@ export default function Messenger() {
                             </div>
                         )}
                     </div>
-
-                    {/* Chat Online section on the right */}
                     <div className="w-1/4 border-l border-gray-300">
                         <div className="p-4">
                             <ChatOnline
@@ -286,7 +276,6 @@ export default function Messenger() {
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
-
 }

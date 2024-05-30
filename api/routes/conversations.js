@@ -30,15 +30,43 @@ router.post("/", async (req, res) => {
     }
 });
 
-router.get("/:userId",async(req,res)=>{
-    try{
-        const conversation=await Conversation.find({
-            members:{$in:[req.params.userId]},
+router.get("/:userId", async (req, res) => {
+    try {
+        // Find individual conversations where the user is a member
+        const conversations = await Conversation.find({
+            members: { $in: [req.params.userId] },
         });
-        res.status(200).json(conversation);
-    }catch(err)
-    {
+        const allConversations = [...conversations];
+
+        res.status(200).json(allConversations);
+    } catch (err) {
         res.status(500).json(err);
     }
-})
+});
+
+router.post("/groups", async (req, res) => {
+    const { groupName, members, userId } = req.body;
+
+    if (!groupName || !members || !userId) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    try {
+        // Create a new group conversation
+        const newGroup = new Conversation({
+            chatName: groupName,
+            isGroupChat: true,
+            groupAdmin: userId,
+            members: [...members, userId], // Add the creator to the group
+        });
+
+        // Save the new group conversation
+        const savedGroup = await newGroup.save();
+        res.status(201).json(savedGroup);
+    } catch (error) {
+        console.error("Error creating group:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 module.exports=router;
