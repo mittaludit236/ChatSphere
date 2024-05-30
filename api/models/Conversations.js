@@ -6,8 +6,13 @@ const ConversationSchema=new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Message",
       },
-    groupAdmin: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    groupAdmin: { 
+        type: Array,
+     },
     members:{
+        type: Array,
+    },
+    removed:{
         type: Array,
     },
 },
