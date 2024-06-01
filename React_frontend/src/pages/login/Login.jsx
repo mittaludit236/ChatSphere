@@ -26,9 +26,9 @@ const Login = () => {
             <div className="w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4">
                 <div className="bg-white rounded-lg shadow-lg p-8">
                     <div className="text-center mb-6">
-                        <h3 className="text-3xl font-bold text-blue-600">Lamasocial</h3>
+                        <h3 className="text-3xl font-bold text-blue-600">ChatSphere</h3>
                         <p className="text-gray-500 mt-2">
-                            Connect with friends and the world around you on Lamasocial.
+                            Connect with friends and the world around you on ChatSphere.
                         </p>
                     </div>
                     <form onSubmit={handleSubmit}> {/* Form element with onSubmit event handler */}
