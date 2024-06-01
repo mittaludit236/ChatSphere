@@ -43,31 +43,37 @@ router.get("/:userId", async (req, res) => {
         res.status(500).json(err);
     }
 });
-router.post("/addM",async(req,res)=>{
-    const members=req.body.members;
-    const cId=req.body.conversationId;
-    try{
-         // Find the conversation corresponding to cId
-         const conversation = await Conversation.findById(cId);
+router.post("/addM", async (req, res) => {
+    const members = req.body.members;
+    const cId = req.body.conversationId;
+    try {
+        // Find the conversation corresponding to cId
+        const conversation = await Conversation.findById(cId);
 
-         if (!conversation) {
-             return res.status(404).json({ message: "Conversation not found" });
-         }
- 
-         // Add new members to the conversation
-         conversation.members.push(...members);
- 
-         // Save the updated conversation
-         await conversation.save();
- 
-         res.status(200).json({ message: "Members added successfully", conversation: conversation });
-    }
-    catch(err)
-    {
+        if (!conversation) {
+            return res.status(404).json({ message: "Conversation not found" });
+        }
+
+        // Filter out members who are already in the conversation
+        const newMembers = members.filter(member => !conversation.members.includes(member));
+
+        if (newMembers.length === 0) {
+            return res.status(200).json({ message: "No new members to add", conversation: conversation });
+        }
+
+        // Add new members to the conversation
+        conversation.members.push(...newMembers);
+
+        // Save the updated conversation
+        await conversation.save();
+
+        res.status(200).json({ message: "Members added successfully", conversation: conversation });
+    } catch (err) {
         console.error("Error adding member:", err);
         res.status(500).json({ message: "Server error" });
     }
 });
+
 router.post("/removeM",async(req,res)=>{
     const members=req.body.members;
     const cId=req.body.conversationId;
@@ -79,8 +85,8 @@ router.post("/removeM",async(req,res)=>{
              return res.status(404).json({ message: "Conversation not found" });
          }
  
-         // Add new members to the conversation
-         conversation.removed.push(...members);
+         // Remove members from the conversation
+         conversation.members = conversation.members.filter(member => !members.includes(member));
  
          // Save the updated conversation
          await conversation.save();
@@ -93,6 +99,7 @@ router.post("/removeM",async(req,res)=>{
         res.status(500).json({ message: "Server error" });
     }
 });
+
 router.post("/delete",async(req,res)=>{
     const user=req.body.userId;
     const cId=req.body.conversationId;
@@ -183,37 +190,57 @@ router.post("/makeAd",async(req,res)=>{
         res.status(500).json({ message: "Server error" });
     }
 });
-router.post("/removeAd",async(req,res)=>{
-    const curr=req.body.curId;
-    const Mid=req.body.memberId;
-    const cId=req.body.conversationId;
-    try{
-         // Find the conversation corresponding to cId
-         const conversation = await Conversation.findById(cId);
+router.get('/members/:conversationId', async (req, res) => {
+    const conversationId = req.params.conversationId;
 
-         if (!conversation) {
-             return res.status(404).json({ message: "Conversation not found" });
-         }
- 
-         const idx=conversation.groupAdmin.indexOf(curr);
-         if(idx!=-1)
-         {
-            const idx1=conversation.groupAdmin.indexOf(Mid);
-            if(idx1!=-1)
-            conversation.groupAdmin.splice(index, 1);
-         }
-         else
-         return res.status(404).json({ message: "Current user is not admin" });
- 
-         // Save the updated conversation
-         await conversation.save();
- 
-         res.status(200).json({ message: "Admin removed successfully", conversation: conversation });
-    }
-    catch(err)
-    {
-        console.error("Error adding admin:", err);
+    try {
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) {
+            return res.status(404).json({ message: "Conversation not found" });
+        }
+
+        // Assuming conversation.members holds the member details
+        res.status(200).json({ members: conversation.members });
+    } catch (error) {
+        console.error("Error fetching conversation members:", error);
         res.status(500).json({ message: "Server error" });
     }
 });
+
+module.exports = router;
+router.post("/removeAd", async (req, res) => {
+    const { curId, memberId, conversationId } = req.body;
+
+    try {
+        // Find the conversation corresponding to conversationId
+        const conversation = await Conversation.findById(conversationId);
+
+        if (!conversation) {
+            return res.status(404).json({ message: "Conversation not found" });
+        }
+
+        // Check if the current user is an admin
+        const isAdmin = conversation.groupAdmin.includes(curId);
+        if (!isAdmin) {
+            return res.status(403).json({ message: "You are not authorized to remove an admin" });
+        }
+
+        // Check if the member to be removed is also an admin
+        const memberIndex = conversation.groupAdmin.indexOf(memberId);
+        if (memberIndex !== -1) {
+            // Remove the member from the list of admins
+            conversation.groupAdmin.splice(memberIndex, 1);
+        }
+
+        // Save the updated conversation
+        await conversation.save();
+
+        // Respond with success message and updated conversation data
+        res.status(200).json({ message: "Admin removed successfully", conversation });
+    } catch (error) {
+        console.error("Error removing admin:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 module.exports=router;
