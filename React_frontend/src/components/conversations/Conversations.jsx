@@ -31,7 +31,7 @@ export default function Conversation({ conversation, currentUser }) {
                 alt=""
             />
             <span className={`font-medium ${conversation.isGroupChat ? 'text-blue-900' : 'text-black'}`}>
-                {conversation.isGroupChat ? conversation.chatName : user?.username}
+            {conversation.isGroupChat ? conversation.chatName : user?.username}
             </span>
         </div>
     );
