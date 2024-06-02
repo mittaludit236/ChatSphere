@@ -1,7 +1,8 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState, useEffect } from 'react';
 import { BiImage } from 'react-icons/bi';
 import { HiTag } from 'react-icons/hi';
 import { FaMapMarkerAlt } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 import { IoHappyOutline } from 'react-icons/io5';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { AuthContext } from "../../context/AuthContext";
@@ -14,6 +15,20 @@ export default function Share() {
   const [file, setFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [closeFriend, setCloseFriend] = useState(false);
+  const [currentUser, setCurrentUser] = useState({});
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`/users?userId=${user._id}`); // Fetch user data using query parameter
+        setCurrentUser(res.data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUser();
+  }, [user._id]); // Dependency array to re-fetch when user ID changes
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -54,14 +69,14 @@ export default function Share() {
           <img
             className="shareProfileImg w-12 h-12 rounded-full object-cover mr-4"
             src={
-              user.profilePicture
-                ? PF + user.profilePicture
+              currentUser.profilePicture
+                ? PF + currentUser.profilePicture
                 : PF + "person/noadmin.webp"
             }
             alt=""
           />
           <input
-            placeholder={"What's in your mind " + user.username + "?"}
+            placeholder={"What's in your mind " + currentUser.username + "?"}
             className="shareInput border-none w-full focus:outline-none"
             ref={desc}
           />
@@ -78,7 +93,7 @@ export default function Share() {
             <label htmlFor="file" className="shareOption flex items-center mr-6 cursor-pointer">
               <BiImage className="shareIcon text-red-500 mr-1" /> {/* React Icon for image */}
               <span className="shareOptionText text-gray-700">Photo or Video</span>
-              <input style={{ display: "none" }} type="file" id="file" accept=",png,.jpeg,.jpg" onChange={(e) => setFile(e.target.files[0])}></input>
+              <input style={{ display: "none" }} type="file" id="file" accept=".png,.jpeg,.jpg" onChange={(e) => setFile(e.target.files[0])}></input>
             </label>
             <div className="shareOption flex items-center mr-6 cursor-pointer">
               <HiTag className="shareIcon text-blue-500 mr-1" /> {/* React Icon for tag */}

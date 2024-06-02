@@ -52,20 +52,22 @@ const storage = multer.diskStorage({
     }
 });
 const profilePictureStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-      cb(null, "uploads/profiles"); // Set the destination folder for profile pictures
-  },
-  filename: (req, file, cb) => {
-      const ext = path.extname(file.originalname); // Get the file extension
-      cb(null, "profile-" + Date.now() + ext); // Set the filename to include a timestamp
-  },
-});
+    destination: (req, file, cb) => {
+        cb(null, "public/images"); // Set the destination folder for profile pictures
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname); // Get the file extension
+        cb(null, "profile-" + Date.now() + ext); // Set the filename to include a timestamp
+    },
+  });
+  
 
 // Initialize multer upload for profile pictures
-const uploadProfilePicture = multer({ storage: profilePictureStorage });
+const uploadProfilePicture = multer({storage:profilePictureStorage });
 
 // Endpoint for uploading profile pictures
 app.post("/api/upload/profile", uploadProfilePicture.single("profileImage"), (req, res) => {
+    console.log("done");
   try {
       if (!req.file) {
           return res.status(400).json({ message: "No file uploaded." });
@@ -74,7 +76,7 @@ app.post("/api/upload/profile", uploadProfilePicture.single("profileImage"), (re
       return res.status(200).json({ message: "Profile picture uploaded successfully.", filename: req.file.filename });
   } catch (err) {
       console.error("Error uploading profile picture:", err);
-      return res.status(500).json({ message: "Profile picture upload failed." });
+      return res.status(500).json({ message: "Profile picture upload failed. what to do" });
   }
 });
 

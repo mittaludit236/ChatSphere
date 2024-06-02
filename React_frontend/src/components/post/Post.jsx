@@ -8,6 +8,7 @@ import CommentModal from "../comment/Comments";
 import { FaRegCommentAlt } from "react-icons/fa";
 
 export default function Post({ post, x }) {
+  // console.log(post,post.img);
   const { closeFriend, userId } = post;
   const [isCloseFriend, setIsCloseFriend] = useState(false);
   const [like, setLike] = useState(post.likes.length);

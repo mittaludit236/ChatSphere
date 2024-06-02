@@ -68,9 +68,6 @@ router.get("/", async (req, res) => {
         const { name, city } = req.body;
         const userId = req.query.userId;
         const username = req.query.username;
-        console.log(username);
-        console.log(city);
-        console.log(name);
         
         // Find the user by userId if provided, otherwise by username
         const user = userId
