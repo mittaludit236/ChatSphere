@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { FaSearch, FaUser, FaComment, FaBell } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -9,7 +9,21 @@ const Topbar = () => {
   const [searchInput, setSearchInput] = useState(''); // State for search input value
   const [searchResults, setSearchResults] = useState([]); // State for storing search results
   const { user } = useContext(AuthContext);
+  const [currentUser, setCurrentUser] = useState({});
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`/users?userId=${user._id}`); // Fetch user data using user ID
+        setCurrentUser(res.data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUser();
+  }, [user._id]); // Dependency array to re-fetch when user ID changes
 
   const handleChange = (e) => {
     setSearchInput(e.target.value);
@@ -52,9 +66,8 @@ const Topbar = () => {
       <div className="flex-4 flex items-center justify-around text-white mr-20 ml-20">
         <div className="mr-4">
           <Link to='/'>
-          <span className="cursor-pointer ml-10">Homepage</span>
+            <span className="cursor-pointer ml-10">Homepage</span>
           </Link>
-          
           <span className="ml-2 cursor-pointer ml-10">Timeline</span>
         </div>
         <div className="flex ml-20">
@@ -73,7 +86,7 @@ const Topbar = () => {
         </div>
         {/* Link to user profile */}
         <Link to={`/profile/${user.username}`}>
-          <img src={user.profilePicture ? PF + user.profilePicture : PF + "person/noadmin.webp"} alt="" className="w-8 h-8 rounded-full object-cover cursor-pointer ml-10" />
+          <img src={currentUser.profilePicture ? PF + currentUser.profilePicture : PF + "person/noadmin.webp"} alt="" className="w-8 h-8 rounded-full object-cover cursor-pointer ml-10" />
         </Link>
       </div>
     </div>

@@ -12,7 +12,6 @@ import ChatTop from "./chatTop";
 import { RiEmotionLine } from 'react-icons/ri';
 import EmojiPicker from "emoji-picker-react";
 import { BiDotsVertical, BiSearch } from 'react-icons/bi';
-import { AiOutlineClose } from 'react-icons/ai';
 
 export default function Messenger() {
     const [showSearchBar, setShowSearchBar] = useState(false);
@@ -216,43 +215,52 @@ export default function Messenger() {
                 <div className="flex-grow flex relative z-0">
                     <div className="flex-grow border-b border-r border-gray-300 relative z-0 flex flex-col bg-white shadow-lg mask-custom">
                         {currentChat ? (
-                            <div className="flex flex-col">
-                                <ChatTop 
-                                    user={user} 
-                                    senderId={currentChat.members.find(member => member !== user._id)} 
-                                    selected={currentChat} 
-                                />
-                                <div className="p-4 flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 180px)' }}>
-                                    <div>
-                                        {messages.map((m, index) => (
-                                            <div key={index} ref={scrollRef} className={m.sender === user._id ? 'flex justify-end' : 'flex justify-start'}>
-                                                <Message message={m} own={m.sender === user._id} />
-                                            </div>
-                                        ))}
+                            currentChat.removed && currentChat.removed.includes(user._id) ? (
+                                <div className="flex justify-center items-center h-full">
+                                    <div className="text-center p-6 bg-white shadow-lg rounded-lg">
+                                        <h2 className="text-xl font-semibold mb-4">You are not part of this group</h2>
+                                        <p className="text-gray-500">You have been removed from this group. You cannot send or receive messages here.</p>
                                     </div>
                                 </div>
-                                <div className="p-4">
-                                    <div className="flex items-center justify-between">
-                                        <textarea
-                                            className="chatMessageInput flex-grow h-24 px-4 py-2 resize-none border rounded-md mr-2 focus:outline-none focus:border-teal-500 transition duration-300"
-                                            placeholder="Write something..."
-                                            onChange={(e) => setNewMessage(e.target.value)}
-                                            value={newMessage}
-                                        ></textarea>
-                                        <div className="relative">
-                                            <RiEmotionLine className="text-gray-500 text-2xl mr-2 cursor-pointer hover:text-teal-500 transition duration-300" onClick={() => setOpen(!open)} />
-                                            {open && (
-                                                <div className="absolute bottom-full left-0 z-10 animate-fadeIn">
-                                                    <EmojiPicker onEmojiClick={handleEmoji} />
+                            ) : (
+                                <div className="flex flex-col">
+                                    <ChatTop 
+                                        user={user} 
+                                        senderId={currentChat.members.find(member => member !== user._id)} 
+                                        selected={currentChat} 
+                                    />
+                                    <div className="p-4 flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 180px)' }}>
+                                        <div>
+                                            {messages.map((m, index) => (
+                                                <div key={index} ref={scrollRef} className={m.sender === user._id ? 'flex justify-end' : 'flex justify-start'}>
+                                                    <Message message={m} own={m.sender === user._id} />
                                                 </div>
-                                            )}
+                                            ))}
                                         </div>
-                                        <button className="px-6 py-2 rounded bg-teal-500 text-white font-semibold hover:bg-teal-600 focus:outline-none focus:bg-teal-600 transition duration-300 ease-in-out transform hover:scale-105" onClick={handleSubmit}>
-                                            Send
-                                        </button>
+                                    </div>
+                                    <div className="p-4">
+                                        <div className="flex items-center justify-between">
+                                            <textarea
+                                                className="chatMessageInput flex-grow h-24 px-4 py-2 resize-none border rounded-md mr-2 focus:outline-none focus:border-teal-500 transition duration-300"
+                                                placeholder="Write something..."
+                                                onChange={(e) => setNewMessage(e.target.value)}
+                                                value={newMessage}
+                                            ></textarea>
+                                            <div className="relative">
+                                                <RiEmotionLine className="text-gray-500 text-2xl mr-2 cursor-pointer hover:text-teal-500 transition duration-300" onClick={() => setOpen(!open)} />
+                                                {open && (
+                                                    <div className="absolute bottom-full left-0 z-10 animate-fadeIn">
+                                                        <EmojiPicker onEmojiClick={handleEmoji} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <button className="px-6 py-2 rounded bg-teal-500 text-white font-semibold hover:bg-teal-600 focus:outline-none focus:bg-teal-600 transition duration-300 ease-in-out transform hover:scale-105" onClick={handleSubmit}>
+                                                Send
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            )
                         ) : (
                             <div className="flex justify-center items-center h-full bg-gradient-to-br from-blue-200 to-purple-300">
                                 <span className="noConversationText text-6xl text-white font-bold text-center shadow-lg p-6 rounded-lg animate-fadeIn">

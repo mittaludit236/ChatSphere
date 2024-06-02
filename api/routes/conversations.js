@@ -74,31 +74,31 @@ router.post("/addM", async (req, res) => {
     }
 });
 
-router.post("/removeM",async(req,res)=>{
-    const members=req.body.members;
-    const cId=req.body.conversationId;
-    try{
-         // Find the conversation corresponding to cId
-         const conversation = await Conversation.findById(cId);
+router.post("/removeM", async (req, res) => {
+    const members = req.body.members;
+    const cId = req.body.conversationId;
+    
+    try {
+        // Find the conversation corresponding to cId
+        const conversation = await Conversation.findById(cId);
 
-         if (!conversation) {
-             return res.status(404).json({ message: "Conversation not found" });
-         }
- 
-         // Remove members from the conversation
-         conversation.members = conversation.members.filter(member => !members.includes(member));
- 
-         // Save the updated conversation
-         await conversation.save();
- 
-         res.status(200).json({ message: "Members removed successfully", conversation: conversation });
-    }
-    catch(err)
-    {
+        if (!conversation) {
+            return res.status(404).json({ message: "Conversation not found" });
+        }
+
+        // Add members to the removed array if they are not already present
+        conversation.removed = [...new Set([...conversation.removed, ...members])];
+
+        // Save the updated conversation
+        await conversation.save();
+
+        res.status(200).json({ message: "Members removed successfully", conversation: conversation });
+    } catch (err) {
         console.error("Error removing member:", err);
         res.status(500).json({ message: "Server error" });
     }
 });
+
 
 router.post("/delete",async(req,res)=>{
     const user=req.body.userId;
