@@ -1,14 +1,13 @@
 import React, { useRef } from 'react';
-// import { useHistory } from 'react-router-dom';
-// import {Navigate} from "react"
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Register() {
   const username = useRef();
   const email = useRef();
   const password = useRef();
   const passwordAgain = useRef();
-  // const history = useHistory();
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -22,15 +21,21 @@ export default function Register() {
       };
       try {
         await axios.post("/auth/register", user);
-        window.location.href = "/login";
+        toast.success("Signup successful! ");
+       // Delay to show the toast message
       } catch (err) {
         console.log(err);
+        toast.error("Signup failed!");
       }
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000); 
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <ToastContainer />
       <div className="w-3/4 h-3/4 flex">
         <div className="flex-1 flex flex-col justify-center px-10">
           <h3 className="text-5xl font-bold text-blue-600">ChatSphere</h3>

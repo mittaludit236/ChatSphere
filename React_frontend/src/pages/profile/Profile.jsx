@@ -1,13 +1,15 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import toast from 'react-hot-toast';
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
+import 'react-toastify/dist/ReactToastify.css'; // Import the necessary CSS
+
 import Topbar from "../../components/topbar/Topbar";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Rightbar from "../../components/rightbar/Rightbar";
 import Post from "../../components/post/Post";
 import { AuthContext } from "../../context/AuthContext";
-import { AiOutlineCamera } from 'react-icons/ai'; // Importing the camera icon
+import { AiOutlineCamera } from 'react-icons/ai';
 
 export default function Profile() {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -17,7 +19,7 @@ export default function Profile() {
   const [coverFile, setCoverFile] = useState(null);
   const username = useParams().username;
   const { user } = useContext(AuthContext);
- 
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -64,38 +66,40 @@ export default function Profile() {
     const newProfilePicture = {
       userId: user._id,
     };
-    if (file) {
-      const data = new FormData();
-      const fileName = Date.now() + file.name;
-      data.append("name", fileName);
-      data.append("file", file);
-      newProfilePicture.profilePicture = fileName;
-      try {
-        await axios.post("/upload", data);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    if (coverFile) {
-      const data = new FormData();
-      const fileName = Date.now() + coverFile.name;
-      data.append("name", fileName);
-      data.append("file", coverFile);
-      newProfilePicture.coverPicture = fileName;
-      try {
-        await axios.post("/upload", data);
-        toast.success("profile image uploaded successfully");
-      } catch (err) {
-        toast.error("profile pic upload failed");
-        console.error(err);
-      }
-    }
-    try {
-      await axios.put(`/users/${user._id}`, newProfilePicture);
 
-      window.location.reload();
+    try {
+      if (file) {
+        const data = new FormData();
+        const fileName = Date.now() + file.name;
+        data.append("name", fileName);
+        data.append("file", file);
+        newProfilePicture.profilePicture = fileName;
+  
+        await axios.post("/upload", data);
+        toast.success("Profile picture uploaded successfully"); 
+      }
+  
+      if (coverFile) {
+        const data = new FormData();
+        const fileName = Date.now() + coverFile.name;
+        data.append("name", fileName);
+        data.append("file", coverFile);
+        newProfilePicture.coverPicture = fileName;
+  
+        await axios.post("/upload", data);
+        toast.success("Cover picture uploaded successfully"); 
+            }
+  
+      await axios.put(`/users/${user._id}`, newProfilePicture);
+  
+ 
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+  
     } catch (err) {
       console.error(err);
+      
     }
   };
 
@@ -191,6 +195,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
+      <ToastContainer /> {/* Add ToastContainer */}
     </div>
   );
 }

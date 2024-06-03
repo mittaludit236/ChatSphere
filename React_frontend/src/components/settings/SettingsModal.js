@@ -18,6 +18,8 @@ export default function Settings() {
             try {
                 const res = await axios.get(`/users?username=${username}`);
                 setUser(res.data);
+                setName(res.data.name);
+                setCity(res.data.city);
                
             } catch (error) {
                 console.error("Error fetching user data:", error);
@@ -35,6 +37,11 @@ export default function Settings() {
     };
 
     const handleSaveChanges = async () => {
+        if (!name || !city) {
+            alert("Please provide values for name and city.");
+            return;
+        }
+
         try {
             const res = await axios.put(`/users?username=${username}`, { name, city });
             setUser(res.data);

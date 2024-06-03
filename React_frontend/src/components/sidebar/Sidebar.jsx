@@ -1,5 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
+import 'react-toastify/dist/ReactToastify.css'; // Import the necessary CSS
 import axios from 'axios';
 import {
   RiChat1Line,
@@ -24,22 +26,26 @@ export default function Sidebar() {
     setShowModal(false);
   };
 
+
   const toggleCloseFriend = async (friendId, isCloseFriend) => {
     try {
       if (currentUser && currentUser._id) {
         if (isCloseFriend) {
           await axios.put(`/users/${friendId}/rclosef`, { userId: currentUser._id });
+          toast.success("User removed from close friends successfully");
         } else {
           await axios.put(`/users/${friendId}/closef`, { userId: currentUser._id });
+          toast.success("User added to close friends successfully");
         }
         // After adding/removing friend, update the friend list
         getFriends();
       }
     } catch (error) {
       console.error('Error toggling close friend:', error);
+      toast.error("Failed to add/remove user from close friends");
     }
   };
-
+  
   const getFriends = async () => {
     try {
       if (currentUser && currentUser._id) {
