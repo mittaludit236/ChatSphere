@@ -5,6 +5,9 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import Online from '../online/Online';
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
+import 'react-toastify/dist/ReactToastify.css'; // Import the necessary CSS
+
 import { Users } from '../../dummyData';
 
 export default function Rightbar({ user }) {
@@ -31,19 +34,19 @@ export default function Rightbar({ user }) {
 
   const handleClick = async () => {
     try {
-      console.log("before", followed)
       if (followed) {
         await axios.put(`/users/${user._id}/unfollow`, { userId: currentUser._id });
         dispatch({ type: 'UNFOLLOW', payload: user._id });
+        toast.success("User unfollowed successfully");
       } else {
         await axios.put(`/users/${user._id}/follow`, { userId: currentUser._id });
         dispatch({ type: 'FOLLOW', payload: user._id });
-
+        toast.success("User followed successfully");
       }
       setFollowed(!followed);
-      console.log("after", followed)
     } catch (err) {
       console.log(err);
+      toast.error("Failed to follow/unfollow user");
     }
   };
 

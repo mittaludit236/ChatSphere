@@ -2,7 +2,8 @@ import React, { useContext, useRef, useState, useEffect } from 'react';
 import { BiImage } from 'react-icons/bi';
 import { HiTag } from 'react-icons/hi';
 import { FaMapMarkerAlt } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
+import 'react-toastify/dist/ReactToastify.css'; // Import the necessary CSS
 import { IoHappyOutline } from 'react-icons/io5';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { AuthContext } from "../../context/AuthContext";
@@ -14,13 +15,12 @@ export default function Share() {
   const desc = useRef();
   const [file, setFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [closeFriend, setCloseFriend] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`/users?userId=${user._id}`); // Fetch user data using query parameter
+        const res = await axios.get(`/users?userId=${user._id}`);
         setCurrentUser(res.data);
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -28,39 +28,49 @@ export default function Share() {
     };
 
     fetchUser();
-  }, [user._id]); // Dependency array to re-fetch when user ID changes
+  }, [user._id]);
 
   const submitHandler = (e) => {
     e.preventDefault();
     setShowModal(true);
   };
 
-  const handlePost = async (closeFriendSelected) => {
-    const newPost = {
-      userId: user._id,
-      desc: desc.current.value,
-      closeFriend: closeFriendSelected
-    };
-    if (file) {
-      const data = new FormData();
-      const fileName = Date.now() + file.name;
-      data.append("name", fileName);
-      data.append("file", file);
-      newPost.img = fileName;
-      try {
-        await axios.post("/upload", data);
-      } catch (err) {
-        console.error(err);
-      }
-    }
+  
+
+const handlePost = async (closeFriendSelected) => {
+  const newPost = {
+    userId: user._id,
+    desc: desc.current.value,
+    closeFriend: closeFriendSelected
+  };
+
+  if (file) {
+    const data = new FormData();
+    const fileName = Date.now() + file.name;
+    data.append("name", fileName);
+    data.append("file", file);
+    newPost.img = fileName;
     try {
-      await axios.post("/posts", newPost);
-      window.location.reload();
+      await axios.post("/upload", data);
     } catch (err) {
       console.error(err);
     }
+  }
+
+  try {
+    await axios.post("/posts", newPost);
+    toast.success("Post shared successfully"); // Toast notification for success
     setShowModal(false);
-  };
+    // window.location.reload(); // Reload the window after the toast
+  } catch (err) {
+    console.error(err);
+  }
+   
+  setTimeout(() => {
+    window.location.reload();
+  }, 500);
+
+};
 
   return (
     <div className="share w-full h-48 rounded-lg shadow-md">
@@ -91,20 +101,20 @@ export default function Share() {
         <form className="shareBottom flex items-center justify-between" onSubmit={submitHandler}>
           <div className="shareOptions flex">
             <label htmlFor="file" className="shareOption flex items-center mr-6 cursor-pointer">
-              <BiImage className="shareIcon text-red-500 mr-1" /> {/* React Icon for image */}
+              <BiImage className="shareIcon text-red-500 mr-1" />
               <span className="shareOptionText text-gray-700">Photo or Video</span>
               <input style={{ display: "none" }} type="file" id="file" accept=".png,.jpeg,.jpg" onChange={(e) => setFile(e.target.files[0])}></input>
             </label>
             <div className="shareOption flex items-center mr-6 cursor-pointer">
-              <HiTag className="shareIcon text-blue-500 mr-1" /> {/* React Icon for tag */}
+              <HiTag className="shareIcon text-blue-500 mr-1" />
               <span className="shareOptionText text-gray-700">Tag</span>
             </div>
             <div className="shareOption flex items-center mr-6 cursor-pointer">
-              <FaMapMarkerAlt className="shareIcon text-green-500 mr-1" /> {/* React Icon for location */}
+              <FaMapMarkerAlt className="shareIcon text-green-500 mr-1" />
               <span className="shareOptionText text-gray-700">Location</span>
             </div>
             <div className="shareOption flex items-center cursor-pointer">
-              <IoHappyOutline className="shareIcon text-yellow-500 mr-1" /> {/* React Icon for feelings */}
+              <IoHappyOutline className="shareIcon text-yellow-500 mr-1" />
               <span className="shareOptionText text-gray-700">Feelings</span>
             </div>
           </div>

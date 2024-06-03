@@ -2,6 +2,9 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
+import 'react-toastify/dist/ReactToastify.css'; // Import the necessary CSS
+
 
 const CreateGroup = ({ closeModal }) => {
     const [groupName, setGroupName] = useState('');
@@ -20,10 +23,17 @@ const CreateGroup = ({ closeModal }) => {
                 userId: user._id,
             });
             console.log('Group Created:', res.data);
-            closeModal();
+            toast.success('Group created successfully');
+            closeModal();console.log('Group Created:', res.data);
+   
+
         } catch (err) {
             console.error('Error creating group:', err);
         }
+        
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     };
 
     const handleChange = (e) => {

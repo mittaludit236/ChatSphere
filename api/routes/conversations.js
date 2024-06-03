@@ -8,7 +8,7 @@ router.post("/", async (req, res) => {
     try {
         // Check if a conversation already exists between sender and receiver
         const existingConversation = await Conversation.findOne({
-            isGroupchat: false, // Only check for conversations that are not group chats
+            isGroupChat: false, // Only check for conversations that are not group chats
             members: { $all: [senderId, receiverId] }
         });
 

@@ -230,22 +230,36 @@ router.get("/cfriends/:userId", async (req, res) => {
     try {
         const user = await User.findById(req.params.userId);
         console.log("user:", user); // Check if user object is retrieved successfully
+        
+        // Find the user's friends
         const friends = await Promise.all(
             user.closeFriend.map(friendsId => {
                 return User.findById(friendsId);
             })
         );
         console.log("friends:", friends); // Check if friends array is populated
+        
+        // Filter out friends who are not in the user's followings
+        const filteredFriends = friends.filter(friend => user.followings.includes(friend._id.toString()));
+        console.log("filteredFriends:", filteredFriends); // Check the filtered friends
+        
         let friendList = [];
-        friends.map(friend => {
+        // Prepare friendList array
+        filteredFriends.forEach(friend => {
             const { _id, username, profilePicture } = friend;
             friendList.push({ _id, username, profilePicture });
         });
         console.log("friendList:", friendList); // Check the final friendList array
+        
+        // Update user's closeFriend array with filteredFriends
+        user.closeFriend = filteredFriends.map(friend => friend._id);
+        await user.save();
+        
         res.status(200).json(friendList);
     } catch (err) {
         console.error(err); // Log any errors to console
         res.status(500).json(err);
     }
 });
+
 module.exports=router;

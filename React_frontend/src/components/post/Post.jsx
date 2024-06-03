@@ -7,18 +7,20 @@ import { AuthContext } from "../../context/AuthContext";
 import CommentModal from "../comment/Comments";
 import { FaRegCommentAlt } from "react-icons/fa";
 
-export default function Post({ post, x }) {
-  // console.log(post,post.img);
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
+import 'react-toastify/dist/ReactToastify.css'; // Import the necessary CSS
+
+export default function Post({ post, onDelete }) {
   const { closeFriend, userId } = post;
   const [isCloseFriend, setIsCloseFriend] = useState(false);
   const [like, setLike] = useState(post.likes.length);
   const [isLiked, setIsLiked] = useState(false);
   const [user, setUser] = useState({});
   const [showComments, setShowComments] = useState(false);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // State for showing delete confirmation modal
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const { user: currentUser } = useContext(AuthContext);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
-  
+
   useEffect(() => {
     setIsLiked(post.likes.includes(currentUser._id));
   }, [currentUser._id, post.likes]);
@@ -30,7 +32,6 @@ export default function Post({ post, x }) {
         const closeFriends = res.data;
         const closeFriendIds = closeFriends.map(friend => friend._id);
         setIsCloseFriend(closeFriendIds.includes(currentUser._id));
-        // setIsCloseFriend(currentUser._id===post._id);
         if (userId === currentUser._id) {
           setIsCloseFriend(true);
         }
@@ -67,22 +68,31 @@ export default function Post({ post, x }) {
   const handleDeleteConfirmation = () => {
     setShowDeleteConfirmation(true);
   };
-
   const handleDeletePost = async () => {
     try {
       await axios.delete(`/posts/${post._id}`, { data: { userId: currentUser._id } });
+      toast.success("Post deleted successfully");
+      console.log("Deleting post successful, reloading window...");
       setShowDeleteConfirmation(false);
-      window.location.reload(); // Reload the page
-    } catch (error) {
-      console.log(error);
+      
+     
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } finally {
+      // Ensure the window reloads even if there's an error (not recommended)
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
   };
+  
+  
 
   const toggleCommentsModal = () => {
     setShowComments(!showComments);
   };
 
-  // Display the post only if closeFriend is false or if closeFriend is true and the current user is in the close friend list
   if (!closeFriend || (closeFriend && isCloseFriend)) {
     return (
       <div className="w-full rounded-md shadow-md my-8">
@@ -99,7 +109,7 @@ export default function Post({ post, x }) {
               <span className="text-base font-medium">{user.username}</span>
               <span className="text-sm text-gray-500 ml-2">{format(post.createdAt)}</span>
             </div>
-            {post.userId === currentUser._id && x && (
+            {post.userId === currentUser._id && (
               <div className="text-gray-500 cursor-pointer hover:text-blue-500">
                 <MdDelete onClick={handleDeleteConfirmation} />
               </div>
@@ -136,7 +146,6 @@ export default function Post({ post, x }) {
           </div>
         </div>
         {showComments && <CommentModal postId={post._id} closeModal={toggleCommentsModal} />}
-        {/* Confirmation Modal */}
         {showDeleteConfirmation && (
           <div className="fixed inset-0 z-10 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-4 rounded-md">
@@ -147,7 +156,9 @@ export default function Post({ post, x }) {
               </div>
             </div>
           </div>
+          
         )}
+         <ToastContainer /> 
       </div>
     );
   } else {
