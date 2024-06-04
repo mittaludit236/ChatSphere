@@ -39,9 +39,9 @@ const Modal = ({ currentUser, clickedUser }) => {
   };
 
   return (
-    <div className="hover:underline z-2" onClick={handleClick}>
+    <div className="hover:underline z-2 " onClick={handleClick}>
       <div className="modal">
-        <div className="modal-content flex items-center py-2 px-4">
+        <div className="modal-content flex items-center py-2 px-4 border border-blue-400">
           {clickedUser.profilePicture ? (
             <img src={PF + clickedUser.profilePicture} alt={clickedUser.username} className="w-10 h-10 rounded-full object-cover mr-2" />
           ) : (

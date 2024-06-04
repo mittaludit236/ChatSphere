@@ -10,13 +10,13 @@ export default function Home() {
             <Topbar sticky />
             <div className="flex z-0">
                 <div className="w-1/5">
-                    <Sidebar />
+                    <Sidebar sticky />
                 </div>
                 <div className="w-3/5">
                     <Feed />
                 </div>
                 <div className="w-1/5">
-                    <Rightbar />
+                    <Rightbar sticky />
                 </div>
             </div>
         </div>

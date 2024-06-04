@@ -129,7 +129,7 @@ const handlePost = async (closeFriendSelected) => {
             <h2 className="text-xl mb-4">Who can see your post?</h2>
             <div className="flex justify-around">
               <button
-                className="py-2 px-4 rounded-lg bg-blue-500 text-white"
+                className="py-2 px-4 rounded-lg bg-blue-500 text-white mr-4"
                 onClick={() => handlePost(true)}
               >
                 Close Friend

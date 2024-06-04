@@ -1,14 +1,11 @@
 import React, { useContext, useRef } from 'react';
 import { loginCall } from '../../apicalls';
 import { AuthContext } from '../../context/AuthContext';
-import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
-import 'react-toastify/dist/ReactToastify.css'; // Import the necessary CSS
 import { FaSpinner } from 'react-icons/fa';
-
 const Login = () => {
     const email = useRef(); // useRef for email input
     const password = useRef(); // useRef for password input
-    const { isFetching, dispatch } = useContext(AuthContext);
+    const { user, isFetching, error, dispatch } = useContext(AuthContext);
 
     // Function to handle form submission
     const handleSubmit = (event) => {
@@ -16,21 +13,16 @@ const Login = () => {
         handleClick(); // Call handleClick function when form is submitted
     };
 
-    const handleClick = async () => {
-        try {
-            const userData = await loginCall(
-                { email: email.current.value, password: password.current.value },
-                dispatch
-            );
-            toast.success("Login successful!"); // Show success toast on successful login
-        } catch (err) {
-            toast.error("Login failed!"); // Show error toast on login failure
-        }
+    // Function to handle click (placeholder function, replace with your logic)
+    const handleClick = () => {
+        loginCall(
+            { email: email.current.value, password: password.current.value },
+            dispatch
+        );
     };
 
     return (
         <div className="bg-gray-100 h-screen flex justify-center items-center">
-            <ToastContainer />
             <div className="w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4">
                 <div className="bg-white rounded-lg shadow-lg p-8">
                     <div className="text-center mb-6">
@@ -64,7 +56,7 @@ const Login = () => {
                                 Forgot Password?
                             </div>
                             <button className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300">
-                                {isFetching ? (
+                            {isFetching ? (
                                     <FaSpinner color="white" size="20px" />
                                 ) : (
                                     "Create a New Account"

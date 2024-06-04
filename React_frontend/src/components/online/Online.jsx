@@ -4,7 +4,7 @@ export default function online({user}) {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   return (
     <li className="flex items-center mb-4">
-    <div className="rightbarprofile relative">
+    <div className="rightbarprofile relative z-10000000">
         <img
             className="w-10 h-10 rounded-full"
             src={PF+ user.profilePicture}

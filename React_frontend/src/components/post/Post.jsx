@@ -95,7 +95,7 @@ export default function Post({ post, onDelete }) {
 
   if (!closeFriend || (closeFriend && isCloseFriend)) {
     return (
-      <div className="w-full rounded-md shadow-md my-8">
+      <div className="w-full rounded-md  shadow-lg bg-white my-8  border border-blue-400">
         <div className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
