@@ -15,6 +15,9 @@ const ChatTop = ({ user, selected }) => {
     const [members, setMembers] = useState([]);
     const [groupAdmin, setGroupAdmin] = useState([]);
     const [memberUsers, setMemberUsers] = useState([]);
+    const [showVideoCallModal, setShowVideoCallModal] = useState(false);  // State for video call modal
+    const [videoCallName, setVideoCallName] = useState('');
+    const [videoCallRoom, setVideoCallRoom] = useState('');
     const PF = process.env.REACT_APP_PUBLIC_FOLDER;
 
     useEffect(() => {
@@ -135,6 +138,24 @@ const ChatTop = ({ user, selected }) => {
             });
     };
 
+    const handleVideoCallClick = () => {
+        setShowVideoCallModal(true);
+    };
+
+    const handleVideoCallJoin = () => {
+        console.log('Joining video call with:', videoCallName, videoCallRoom);
+        // Logic to join the video call
+        setShowVideoCallModal(false);
+        setVideoCallName('');
+        setVideoCallRoom('');
+    };
+
+    const handleCloseVideoCallModal = () => {
+        setShowVideoCallModal(false);
+        setVideoCallName('');
+        setVideoCallRoom('');
+    };
+
     return (
         <div className="flex justify-between items-center bg-gray-200 px-8 py-6 rounded-t-lg">
             <div className="flex items-center">
@@ -148,7 +169,7 @@ const ChatTop = ({ user, selected }) => {
             <div className="flex items-center space-x-4">
                 {isAdmin && <FaEllipsisV className="text-gray-600 cursor-pointer" onClick={handleSettingsClick} />}
                 <FaPhoneAlt className="text-gray-600 cursor-pointer" />
-                <FaVideo className="text-gray-600 cursor-pointer" />
+                <FaVideo className="text-gray-600 cursor-pointer" onClick={handleVideoCallClick} />
             </div>
             {showSettingsModal && (
                 <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -207,6 +228,39 @@ const ChatTop = ({ user, selected }) => {
                             {showSearch ? 'Remove Selected Users' : 'Remove User'}
                         </button>
                         <button className="bg-green-500 text-white py-2 px-4 rounded-lg" onClick={handleAdminClick}>Members</button>
+                    </div>
+                </div>
+            )}
+            {showVideoCallModal && (
+                <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-semibold">Join Video Call</h2>
+                            <button className="text-gray-700" onClick={handleCloseVideoCallModal}>X</button>
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-gray-700 mb-2">Name</label>
+                            <input
+                                type="text"
+                                value={videoCallName}
+                                onChange={(e) => setVideoCallName(e.target.value)}
+                                className="border rounded-lg px-2 py-1 w-full"
+                                placeholder="Enter your name"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-gray-700 mb-2">Room Number</label>
+                            <input
+                                type="text"
+                                value={videoCallRoom}
+                                onChange={(e) => setVideoCallRoom(e.target.value)}
+                                className="border rounded-lg px-2 py-1 w-full"
+                                placeholder="Enter room number"
+                            />
+                        </div>
+                        <button className="bg-blue-500 text-white py-2 px-4 rounded-lg" onClick={handleVideoCallJoin}>
+                            Join
+                        </button>
                     </div>
                 </div>
             )}
