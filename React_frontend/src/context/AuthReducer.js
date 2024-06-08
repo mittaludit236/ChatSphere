@@ -1,3 +1,6 @@
+export const Logout = () => ({
+  type: "LOGOUT",
+});
 const AuthReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN_START":
@@ -35,6 +38,12 @@ const AuthReducer = (state, action) => {
             (following) => following !== action.payload
           ),
         },
+      };
+      case "LOGOUT":
+      return {
+        user: null,
+        isFetching: false,
+        error: false,
       };
     default:
       return state;

@@ -3,19 +3,21 @@ import axios from 'axios';
 import { FaSearch, FaUser, FaComment, FaBell } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import Modal from './Modal'; // Importing the Modal component
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../../context/AuthContext'; // Import Logout action
+import { Logout } from '../../context/AuthReducer';
 
 const Topbar = () => {
-  const [searchInput, setSearchInput] = useState(''); // State for search input value
-  const [searchResults, setSearchResults] = useState([]); // State for storing search results
-  const { user } = useContext(AuthContext);
+  const [searchInput, setSearchInput] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const { user, dispatch } = useContext(AuthContext);
   const [currentUser, setCurrentUser] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`/users?userId=${user._id}`); // Fetch user data using user ID
+        const res = await axios.get(`/users?userId=${user._id}`);
         setCurrentUser(res.data);
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -23,19 +25,25 @@ const Topbar = () => {
     };
 
     fetchUser();
-  }, [user._id]); // Dependency array to re-fetch when user ID changes
+  }, [user._id]);
 
   const handleChange = (e) => {
     setSearchInput(e.target.value);
-    // Make a request to the backend when search input changes
     axios.post('/users/search', { find_prof: e.target.value })
       .then((response) => {
-        setSearchResults(response.data); // Set search results state with data from the backend
+        setSearchResults(response.data);
       })
       .catch((error) => {
         console.error('Error searching:', error);
       });
   };
+
+  // Function to open the modal
+  const openModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  // Function to close the modal
 
   return (
     <div className="bg-blue-500 h-16 w-full flex items-center sticky top-0 z-50">
@@ -54,7 +62,6 @@ const Topbar = () => {
             onChange={handleChange}
           />
         </div>
-        {/* Display search results */}
         {searchResults.length > 0 && (
           <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-lg">
             {searchResults.map((user) => (
@@ -84,10 +91,32 @@ const Topbar = () => {
             <span className="topbarIconBadge">1</span>
           </div>
         </div>
-        {/* Link to user profile */}
-        <Link to={`/profile/${user.username}`}>
-          <img src={currentUser.profilePicture ? PF + currentUser.profilePicture : PF + "person/noadmin.webp"} alt="" className="w-8 h-8 rounded-full object-cover cursor-pointer ml-10" />
-        </Link>
+        <div>
+          {isModalOpen && (
+            <div className="absolute top-16 right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-200">
+              <button
+                className="block w-full py-2 text-center bg-blue-500 text-white hover:bg-blue-600 rounded-t-lg focus:outline-none"
+                onClick={() => { window.location.href = `/profile/${user.username}` }}
+              >
+                Profile
+              </button>
+              <button
+                className="block w-full py-2 text-center bg-red-500 text-white hover:bg-red-600 rounded-b-lg focus:outline-none"
+                onClick={() => { dispatch(Logout()); window.location.href = '/login'; }}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+
+        </div>
+
+        <img
+          src={currentUser.profilePicture ? PF + currentUser.profilePicture : PF + "person/noadmin.webp"}
+          alt=""
+          className="w-8 h-8 rounded-full object-cover cursor-pointer ml-10"
+          onClick={openModal}
+        />
       </div>
     </div>
   );
