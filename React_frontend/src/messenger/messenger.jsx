@@ -46,13 +46,14 @@ export default function Messenger() {
                 sender: data.senderId,
                 text: data.text,
                 createdAt: Date.now(),
+                conversationId: data.conversationId,
             });
         });
     }, []);
 
     useEffect(() => {
         arrivalMessage &&
-            currentChat?.members.includes(arrivalMessage.sender) &&
+            currentChat?._id === arrivalMessage.conversationId &&
             setMessages((prev) => [...prev, arrivalMessage]);
     }, [arrivalMessage, currentChat]);
 
@@ -96,6 +97,9 @@ export default function Messenger() {
             }
         };
         getMessages();
+        if (currentChat) {
+            socket.current.emit("joinRoom", currentChat._id);
+        }
     }, [currentChat]);
 
     const handleSubmit = async (e) => {
@@ -105,14 +109,11 @@ export default function Messenger() {
             text: newMessage,
             conversationId: currentChat._id,
         };
-        const receiverId = currentChat.members.find(
-            (member) => member !== user._id
-        );
 
         socket.current.emit("sendMessage", {
             senderId: user._id,
-            receiverId,
             text: newMessage,
+            conversationId: currentChat._id,
         });
         try {
             const res = await axios.post("/messages", message);
