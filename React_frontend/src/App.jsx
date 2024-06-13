@@ -8,6 +8,7 @@ import { AuthContext } from './context/AuthContext';
 import Messenger from './messenger/messenger';
 import SettingsModal from './components/settings/SettingsModal';
 import CreateGroup from "./messenger/createGroup"
+import RoomPage from "./messenger/Room";
 import Topbar from './components/topbar/Topbar';
 function App() {
   const { user } = useContext(AuthContext);
@@ -24,7 +25,7 @@ function App() {
         <Route path="/messenger/createGroup" element={user ?  <CreateGroup/> :<Register/>}/>
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/" element={user ? <Home /> : <Register />} />
-        
+        <Route path="/room/:roomId" element={<RoomPage />} />
         {/* Route for settings with SettingsModal component */}
         <Route path="/settings/:username" element={<SettingsModal />} />
       </Routes>
